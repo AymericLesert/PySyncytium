@@ -135,6 +135,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.Syncytium/
+.vs/
 
 # Spyder project settings
 .spyderproject
