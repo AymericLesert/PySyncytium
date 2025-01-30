@@ -11,7 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>PySyncytium</Name>
     <RootNamespace>PySyncytium</RootNamespace>
-    <InterpreterId>MSBuild|.Syncytium|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,13 +22,21 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DSDatabase\DSDatabase.py" />
+    <Compile Include="DSDatabase\__init__.py" />
     <Compile Include="PySyncytium.py" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include=".Syncytium\">
-      <Id>.Syncytium</Id>
-      <Version>0.0</Version>
-      <Description>.Syncytium (Python 3.12 (64-bit))</Description>
+    <Content Include=".gitignore" />
+    <Content Include="LICENSE.txt" />
+    <Content Include="README.md" />
+    <Content Include="requirements.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="env\">
+      <Id>env</Id>
+      <Version>3.13</Version>
+      <Description>env (Python 3.13 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
@@ -36,10 +44,7 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
-    <Content Include=".gitignore" />
-    <Content Include="LICENSE.txt" />
-    <Content Include="README.md" />
-    <Content Include="requirements.txt" />
+    <Folder Include="DSDatabase\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
