@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d8645bba-a2b4-4bde-991c-3afbe19af729</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>PySyncytium.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -12,6 +12,9 @@
     <Name>PySyncytium</Name>
     <RootNamespace>PySyncytium</RootNamespace>
     <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <EnableNativeCodeDebugging>True</EnableNativeCodeDebugging>
+    <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,12 +25,16 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DSDatabase\DSDatabase.py" />
-    <Compile Include="DSDatabase\__init__.py" />
-    <Compile Include="PySyncytium.py" />
+    <Compile Include="database\criteria.py" />
+    <Compile Include="database\field.py" />
+    <Compile Include="database\schema.py" />
+    <Compile Include="database\table.py" />
+    <Compile Include="database\__init__.py" />
+    <Compile Include="main.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
+    <Content Include=".pylintrc" />
     <Content Include="LICENSE.txt" />
     <Content Include="README.md" />
     <Content Include="requirements.txt" />
@@ -44,7 +51,7 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DSDatabase\" />
+    <Folder Include="database\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
