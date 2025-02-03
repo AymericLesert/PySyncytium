@@ -25,11 +25,28 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="database\criteria.py" />
-    <Compile Include="database\field.py" />
-    <Compile Include="database\schema.py" />
-    <Compile Include="database\table.py" />
-    <Compile Include="database\__init__.py" />
+    <Compile Include="schema\criteria\criterialogicalnot.py" />
+    <Compile Include="schema\criteria\criterialogicalor.py" />
+    <Compile Include="schema\criteria\criterialogicaland.py" />
+    <Compile Include="schema\criteria\criterialogical.py" />
+    <Compile Include="schema\criteria\criteriacomparablein.py" />
+    <Compile Include="schema\criteria\criteriacomparablelike.py" />
+    <Compile Include="schema\criteria\criteriacomparablegreaterorequal.py" />
+    <Compile Include="schema\criteria\criteriacomparablegreater.py" />
+    <Compile Include="schema\criteria\criteriacomparablenotequal.py" />
+    <Compile Include="schema\criteria\criteriacomparableless.py" />
+    <Compile Include="schema\criteria\criteriacomparablelessorequal.py" />
+    <Compile Include="schema\criteria\criteriacomparableequal.py" />
+    <Compile Include="schema\criteria\criteriacomparable.py" />
+    <Compile Include="schema\criteria\criteria.py" />
+    <Compile Include="schema\criteria\__init__.py" />
+    <Compile Include="schema\field\field.py" />
+    <Compile Include="schema\field\fieldinteger.py" />
+    <Compile Include="schema\field\fieldstring.py" />
+    <Compile Include="schema\field\__init__.py" />
+    <Compile Include="schema\schema.py" />
+    <Compile Include="schema\table.py" />
+    <Compile Include="schema\__init__.py" />
     <Compile Include="main.py" />
   </ItemGroup>
   <ItemGroup>
@@ -51,7 +68,9 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="database\" />
+    <Folder Include="schema\" />
+    <Folder Include="schema\criteria\" />
+    <Folder Include="schema\field\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

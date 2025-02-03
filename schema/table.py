@@ -2,7 +2,8 @@
 This module handles a table.
 """
 
-from .field import DSFieldString, DSFieldInteger  # pylint: disable=unused-import
+from .field.fieldstring import DSFieldString # pylint: disable=unused-import
+from .field.fieldinteger import DSFieldInteger  # pylint: disable=unused-import
 
 class DSTable:
     """
