@@ -5,6 +5,13 @@ This module handles a generic record from a table.
 class DSRecord:
     """This class describes a generic record from any table"""
 
+    def to_dict(self):
+        """Convert the record to a dict"""
+        record = {}
+        for fieldname in self.table.fields:
+            record[fieldname] = self[fieldname]
+        return record
+
     @property
     def table(self):
         """Retrieve the table attached to this record"""

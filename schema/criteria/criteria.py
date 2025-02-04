@@ -4,10 +4,6 @@ This module handles a select criteria.
 
 import importlib
 
-# from .criterialogicaland import DSCriteriaLogicalAnd
-# from .criterialogicalor import DSCriteriaLogicalOr
-# from .criterialogicalnot import DSCriteriaLogicalNot
-
 class DSCriteria:
     """
     This class handles a criteria description.
@@ -16,6 +12,10 @@ class DSCriteria:
     ds_criteria_logical_and = None
     ds_criteria_logical_or = None
     ds_criteria_logical_not = None
+
+    def to_dict(self):
+        """Convert a criteria to a dict"""
+        return []
 
     def and_(self, *items):
         """Define a boolean expression within 'and'"""

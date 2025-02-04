@@ -54,11 +54,22 @@ class DSTable:
         if isinstance(value, tuple):
             for index, fieldname in enumerate(self.__fields):
                 record[fieldname] = value[index]
+        elif isinstance(value, dict):
+            for fieldname in self.__fields:
+                if fieldname in value:
+                    record[fieldname] = value[fieldname]
+
         return record
 
     def insert(self, values):
         """Insert one or many records into the database"""
-        return self.__schema.database.insert(self, values)
+        keys = self.__schema.database.insert(self, values)
+        if isinstance(values, list):
+            for key, value in zip(keys, values):
+                value[self.key] = key
+        else:
+            values[self.key] = keys[0]
+        return values
 
     def select(self, clause):
         """Retrieve the list of records matching within the clause"""
@@ -66,11 +77,20 @@ class DSTable:
 
     def update(self, oldvalue, newvalue):
         """Update a record into the database"""
-        return self.__schema.database.update(self, oldvalue, newvalue)
+        newkeyupdated = self.__schema.database.update(self, oldvalue, newvalue)
+        if newkeyupdated is None:
+            return None
+        return newvalue
 
     def delete(self, values):
         """Delete one or many records into the database"""
-        return self.__schema.database.delete(self, values)
+        keys = self.__schema.database.delete(self, values)
+        if isinstance(values, list):
+            for key, value in zip(keys, values):
+                value[self.key] = key
+        else:
+            values[self.key] = keys[0]
+        return values
 
     def __getattr__(self, name):
         return self.__fields[name]
@@ -79,8 +99,11 @@ class DSTable:
         return self.__fields[name]
 
     def __iter__(self):
+        if self.__select is not None:
+            return self
         self.__select = self.__schema.database.select(self)
         self.__iterator_select = iter(self.__select)
+        # return self.__iterator_select
         return self
 
     def __next__(self):

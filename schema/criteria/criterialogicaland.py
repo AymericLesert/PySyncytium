@@ -9,6 +9,12 @@ class DSCriteriaLogicalAnd(DSCriteriaLogical):
     This class handles a criteria linking criterias within boolean operator 'And'.
     """
 
+    SIGN = 'and'
+
+    def to_dict(self):
+        """Convert a "and" criteria to a dict"""
+        return [ self.SIGN, [ criteria.to_dict() for criteria in self._criterias ] ]
+
     def __str__(self):
         first = True
         values = ""

@@ -1,14 +1,27 @@
 """
-Main program
+Test program (FastAPI)
 """
 
 import json
 import traceback
+import datetime
+import os
+from dotenv import load_dotenv
+
+import jwt
+from fastapi import FastAPI, Header, Path, Depends, HTTPException, Security
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from schema.schema import DSSchema
+from schema.criteria.criteriafactory import factory as criteriafactory
 from database.databasemysql import DSDatabaseMySQL
 
-schema = {
+load_dotenv()
+
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "mysecret")
+ALGORITHM = "HS256"
+
+SCHEMA = {
         'Name': 'Syncytium',
         'Description' : 'Schéma de test',
         'Tables' : {
@@ -34,49 +47,155 @@ schema = {
     }
 
 try:
-    schema = DSSchema(schema)
-    print(json.dumps(schema.to_dict(), sort_keys=False, indent=2))
-
-    with DSDatabaseMySQL("localhost", "root", "6t-8ItCG$%oIh47E=") as db:
-        print("connected", db.is_connected)
-        schema.database = db
-
-        print(json.dumps(db.get_description("Syncytium"), sort_keys=False, indent=2))
-
-        userToto = schema.User.new()
-        userToto.Name = "Toto"
-        userToto.Age = 99
-        userToto.PhoneNumber = "99.99.99.99.99"
-
-        userTata = schema.User.new()
-        userTata.Name = "Tata"
-        userTata.Age = 88
-        userTata.PhoneNumber = "88.99.99.99.99"
-
-        db.begin_transaction()
-        schema.User.delete([userToto, userTata])
-        db.commit()
-
-        db.begin_transaction()
-        schema.User.insert([userToto, userTata])
-        db.commit()
-
-        db.begin_transaction()
-        userTutu = userToto.clone()
-        userTutu.PhoneNumber = "77.77"
-        userTutu.Age = 1
-        schema.User.update(userToto, userTutu)
-        db.commit()
-
-        for record in schema.User:
-            newrecord = record.clone()
-            newrecord.Name = record.Name + "*"
-            print('current', record)
-            print('new', newrecord)
-
-        for record in schema.User.select(lambda user: user.Name.in_('Aymeric', 'Marie')):
-            print(record)
-            print(record.Name)
+    schema = DSSchema(SCHEMA)
+    db = DSDatabaseMySQL(os.getenv("DATABASE_HOSTNAME", "localhost"),
+                         os.getenv("DATABASE_USERNAME"),
+                         os.getenv("DATABASE_PASSWORD"))
+    db.connect()
+    schema.database = db
 except:  # pylint: disable=bare-except
     traceback.print_exc()
-_ = input()
+
+# Handle the API routes
+
+router = FastAPI(title="Syncytium",
+                 description="Description how to get access to the API Syncytium",
+                 version="0.0.1")
+
+# Handle the authentification user
+# ---------------------------------
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
+
+fake_users_db = {
+    "test": {
+        "username": "test",
+        "password": "password",  # ⚠️ Remplace cela par un hash sécurisé en production
+        "schema": "Syncytium"
+    }
+}
+
+def create_access_token(data: dict, expires_delta: int = 30):
+    """Create a JWT Token containing current information of a new valid session"""
+    to_encode = data.copy()
+    expire = datetime.datetime.utcnow() + datetime.timedelta(minutes=expires_delta)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+@router.post("/token")
+async def get_token(form: OAuth2PasswordRequestForm = Depends()):
+    """Génère un token pour un utilisateur"""
+    user = fake_users_db.get(form.username)
+    if not user or user["password"] != form.password:
+        raise HTTPException(status_code=400, detail="Invalid username or password")
+    return {
+        "access_token": create_access_token({"sub": form.username, "schema": user["schema"]}), 
+        "token_type": "bearer"
+        }
+
+def get_user(token = Security(oauth2_scheme)):
+    """Retrieve user profile"""
+    # pylint: disable=raise-missing-from
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+# Handle the API Route
+# --------------------
+
+def get_record(table = Path(..., title="TABLE"),
+               record = Header(None)):
+    """Extract a record from the Header"""
+    if not record:
+        raise HTTPException(status_code=400, detail="Missing record header")
+    return schema[table].new(json.loads(record))
+
+def get_oldrecord(table = Path(..., title="TABLE"),
+                  oldrecord = Header(None)):
+    """Extract a record from the Header"""
+    if not oldrecord:
+        raise HTTPException(status_code=400, detail="Missing record header")
+    return schema[table].new(json.loads(oldrecord))
+
+def get_newrecord(table = Path(..., title="TABLE"),
+                  newrecord = Header(None)):
+    """Extract a record from the Header"""
+    if not newrecord:
+        raise HTTPException(status_code=400, detail="Missing record header")
+    return schema[table].new(json.loads(newrecord))
+
+# --------------------------------------
+# API handles the CRUD into the database
+# --------------------------------------
+
+@router.get("/profil")
+def get_profil(user = Depends(get_user)):
+    """
+    Retrieve the profil of the current user
+    """
+    return {"message": "You are authenticated", "user": user}
+
+@router.post("/schema/{table}/")
+async def insert(table,
+                 record = Depends(get_record),
+                 user = Depends(get_user)):
+    """
+    Create a new record into a table
+    """
+    print(user)
+    db.begin_transaction()
+    newrecord = schema[table].insert(record)
+    db.commit()
+    return newrecord.to_dict()
+
+@router.get("/schema/{table}/")
+async def select(table,
+                 query = None,
+                 user = Depends(get_user)):
+    """
+    Select a list of records from a table
+    * query : describes a filter on the list of records 
+    
+    Example : ['=', 'Name', 'Tutu'] => List of records having 'Name' = 'Tutu'
+    """
+    print(user)
+    if query is None:
+        return { table: [record.to_dict() for record in schema[table]] }
+    return { table: [record.to_dict()
+                     for record
+                     in schema[table].select(lambda record: criteriafactory(json.loads(query), record))] }
+
+@router.put("/schema/{table}/")
+async def update(table,
+                 oldrecord = Depends(get_oldrecord),
+                 newrecord = Depends(get_newrecord),
+                 user = Depends(get_user)):
+    """
+    Update an existing record within a new record into a table
+    * oldrecord has to match the record to update
+    * newrecord has to contain the fields to update
+    """
+    print(user)
+    db.begin_transaction()
+    newrecordupdated = schema[table].update(oldrecord, newrecord)
+    db.commit()
+    if newrecordupdated is None:
+        raise HTTPException(status_code=404, detail="Key missing")
+    return newrecordupdated.to_dict()
+
+@router.delete("/schema/{table}/")
+async def delete(table,
+                 record = Depends(get_record),
+                 user = Depends(get_user)):
+    """
+    Delete an existing record from a table
+    """
+    print(user)
+    db.begin_transaction()
+    oldrecord = schema[table].delete(record)
+    db.commit()
+    return oldrecord.to_dict()
