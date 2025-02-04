@@ -20,12 +20,36 @@ class DSDatabaseMySQL(DSDatabase):
         """Return if the connection is done"""
         return self.__database is not None and self.__database.is_connected()
 
+    def get_description(self, schema):
+        """Retrieve a JSON description of the tables from a given schema"""
+        structure = { 'Name': schema, 'Tables' : {} }
+        self.begin_transaction()
+        self.__transaction = self.__database.cursor()
+        self.__transaction.execute(f"USE `{schema}`")
+        self.__transaction.execute("SHOW TABLES")
+        for (tablename,) in self.__transaction.fetchall():
+            structuretable = { 'Name': tablename, 'Fields': {} }
+            self.__transaction.execute(f"DESCRIBE `{tablename}`")
+            for fieldname, fieldtype, nullable, primarykey, defaultvalue, _ in self.__transaction.fetchall():
+                structurefield = {
+                    'Name': fieldname, 
+                    'Type': fieldtype,
+                    'DefaultValue': defaultvalue,
+                    'Nullable' : nullable
+                    }
+                if primarykey == 'PRI':
+                    structuretable['Key'] = fieldname
+                structuretable['Fields'][fieldname] = structurefield
+            structure['Tables'][tablename] = structuretable
+        self.__database.rollback()
+        return structure
+
     def begin_transaction(self):
         """Start a new transaction"""
         self.__database.start_transaction()
         self.__transaction = self.__database.cursor()
 
-    def insert(self, dstable, values): # pylint: disable=unused-argument
+    def insert(self, dstable, values):
         """Return the list of keys created while inserting the list of values"""
         query = "INSERT INTO `" + dstable.schema.name + "`.`" + dstable.name + "`" + \
                 "(" + ", ".join(["`" + name + "`" for name in dstable.fields]) + ") " + \
@@ -58,7 +82,7 @@ class DSDatabaseMySQL(DSDatabase):
         cursor.execute(query)
         return DSCursor(cursor, dstable)
 
-    def update(self, dstable, oldvalue, newvalue): # pylint: disable=unused-argument
+    def update(self, dstable, oldvalue, newvalue):
         """Return the key updated"""
         if oldvalue[dstable.key] != newvalue[dstable.key]:
             return None
@@ -78,7 +102,7 @@ class DSDatabaseMySQL(DSDatabase):
         self.__transaction.execute(query, tuple(values))
         return [newvalue[dstable.key]]
 
-    def delete(self, dstable, values): # pylint: disable=unused-argument
+    def delete(self, dstable, values):
         """Return the list of keys removed"""
         keys = []
         if isinstance(values, list):

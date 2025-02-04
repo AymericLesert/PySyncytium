@@ -2,6 +2,8 @@
 This module handles the database connexion.
 """
 
+# pylint: disable=unused-argument
+
 class DSDatabase:
     """This abstract class describes the main functions from a database connexion"""
 
@@ -14,23 +16,27 @@ class DSDatabase:
         """Return if the connection is done"""
         return False
 
+    def get_description(self, schema):
+        """Retrieve a JSON description of the tables from a given schema"""
+        return {}
+
     def begin_transaction(self):
         """Start a new transaction"""
         return self
 
-    def insert(self, dstable, values): # pylint: disable=unused-argument
+    def insert(self, dstable, values):
         """Return the list of keys created while inserting the list of values"""
         return None
 
-    def select(self, dstable, clause): # pylint: disable=unused-argument
+    def select(self, dstable, clause):
         """Return a cursor to the selection of the dstable"""
         return None
 
-    def update(self, dstable, oldvalue, newvalue): # pylint: disable=unused-argument
+    def update(self, dstable, oldvalue, newvalue):
         """Return the key updated"""
         return None
 
-    def delete(self, dstable, values): # pylint: disable=unused-argument
+    def delete(self, dstable, values):
         """Return the list of keys removed"""
         return None
 
