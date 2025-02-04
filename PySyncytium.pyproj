@@ -4,14 +4,17 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d8645bba-a2b4-4bde-991c-3afbe19af729</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>PySyncytium.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>PySyncytium</Name>
     <RootNamespace>PySyncytium</RootNamespace>
-    <InterpreterId>MSBuild|.Syncytium|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <EnableNativeCodeDebugging>True</EnableNativeCodeDebugging>
+    <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,13 +25,47 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="PySyncytium.py" />
+    <Compile Include="database\cursor.py" />
+    <Compile Include="database\databasemysql.py" />
+    <Compile Include="database\database.py" />
+    <Compile Include="database\__init__.py" />
+    <Compile Include="schema\record.py" />
+    <Compile Include="schema\criteria\criterialogicalnot.py" />
+    <Compile Include="schema\criteria\criterialogicalor.py" />
+    <Compile Include="schema\criteria\criterialogicaland.py" />
+    <Compile Include="schema\criteria\criterialogical.py" />
+    <Compile Include="schema\criteria\criteriacomparablein.py" />
+    <Compile Include="schema\criteria\criteriacomparablelike.py" />
+    <Compile Include="schema\criteria\criteriacomparablegreaterorequal.py" />
+    <Compile Include="schema\criteria\criteriacomparablegreater.py" />
+    <Compile Include="schema\criteria\criteriacomparablenotequal.py" />
+    <Compile Include="schema\criteria\criteriacomparableless.py" />
+    <Compile Include="schema\criteria\criteriacomparablelessorequal.py" />
+    <Compile Include="schema\criteria\criteriacomparableequal.py" />
+    <Compile Include="schema\criteria\criteriacomparable.py" />
+    <Compile Include="schema\criteria\criteria.py" />
+    <Compile Include="schema\criteria\__init__.py" />
+    <Compile Include="schema\field\field.py" />
+    <Compile Include="schema\field\fieldinteger.py" />
+    <Compile Include="schema\field\fieldstring.py" />
+    <Compile Include="schema\field\__init__.py" />
+    <Compile Include="schema\schema.py" />
+    <Compile Include="schema\table.py" />
+    <Compile Include="schema\__init__.py" />
+    <Compile Include="main.py" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include=".Syncytium\">
-      <Id>.Syncytium</Id>
-      <Version>0.0</Version>
-      <Description>.Syncytium (Python 3.12 (64-bit))</Description>
+    <Content Include=".gitignore" />
+    <Content Include=".pylintrc" />
+    <Content Include="LICENSE.txt" />
+    <Content Include="README.md" />
+    <Content Include="requirements.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="env\">
+      <Id>env</Id>
+      <Version>3.13</Version>
+      <Description>env (Python 3.13 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
@@ -36,10 +73,10 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
-    <Content Include=".gitignore" />
-    <Content Include="LICENSE.txt" />
-    <Content Include="README.md" />
-    <Content Include="requirements.txt" />
+    <Folder Include="database\" />
+    <Folder Include="schema\" />
+    <Folder Include="schema\criteria\" />
+    <Folder Include="schema\field\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
