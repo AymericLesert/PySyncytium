@@ -13,3 +13,7 @@ class DSCriteriaComparableLessOrEqual(DSCriteriaComparable):
 
     def __str__(self):
         return f"{self.fieldname} <= {self.fieldvalue}"
+
+    def tomysql(self):
+        """Convert the criteria to a SQL String compatible to MySQL Database"""
+        return f"`{self.fieldname}` <= {self.fieldvalue}"

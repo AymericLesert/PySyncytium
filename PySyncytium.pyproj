@@ -25,6 +25,11 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="database\cursor.py" />
+    <Compile Include="database\databasemysql.py" />
+    <Compile Include="database\database.py" />
+    <Compile Include="database\__init__.py" />
+    <Compile Include="schema\record.py" />
     <Compile Include="schema\criteria\criterialogicalnot.py" />
     <Compile Include="schema\criteria\criterialogicalor.py" />
     <Compile Include="schema\criteria\criterialogicaland.py" />
@@ -68,6 +73,7 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="database\" />
     <Folder Include="schema\" />
     <Folder Include="schema\criteria\" />
     <Folder Include="schema\field\" />

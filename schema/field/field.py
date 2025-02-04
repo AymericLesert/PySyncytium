@@ -21,7 +21,8 @@ class DSField:
         return {
                 'Name': self.name,
                 'Type': self.type,
-                'Description': self.description
+                'Description': self.description,
+                'DefaultValue': self.defaultvalue
             }
 
     @property
@@ -38,6 +39,16 @@ class DSField:
     def description(self):
         """Description of the field"""
         return self.__description
+
+    @property
+    def table(self):
+        """Reference on the table of the field"""
+        return self.__table
+
+    @property
+    def defaultvalue(self):
+        """Default value of the field"""
+        return self.__defaultvalue
 
     def __eq__(self, value):
         return DSCriteriaComparableEqual(self, value)
@@ -57,15 +68,17 @@ class DSField:
     def __ge__(self, value):
         return DSCriteriaComparableGreaterOrEqual(self, value)
 
-    def operator_in(self, *items):
+    def in_(self, *items):
         """Create a criteria on the field matching with a list of values"""
         return DSCriteriaComparableIn(self, items)
 
-    def operator_like(self, value):
+    def like_(self, value):
         """Create a criteria on the field matching with a value corresponding to the like SQL"""
         return DSCriteriaComparableLike(self, value)
 
-    def __init__(self, fieldtype, fieldname, description):
+    def __init__(self, table, fieldtype, fieldname, description):
+        self.__table = table
         self.__type = fieldtype
         self.__name = fieldname
+        self.__defaultvalue = description.get('DefaultValue', None)
         self.__description = description.get('Description', '')

@@ -20,6 +20,6 @@ class DSFieldString(DSField):
         """Max lenght of the string"""
         return self.__maxlength
 
-    def __init__(self, fieldname, description):
-        super().__init__("String", fieldname, description)
+    def __init__(self, table, fieldname, description):
+        super().__init__(table, "String", fieldname, description)
         self.__maxlength = description.get('MaxLength', 256)

@@ -33,16 +33,30 @@ class DSSchema:
     @property
     def tables(self):
         """List of table name"""
-        return list(self.__tables)
+        return list(self.__tables.keys())
+
+    @property
+    def database(self):
+        """Retrieve the instance of the database connection"""
+        return self.__db
+
+    @database.setter
+    def database(self, value):
+        """Set the instance of the current database connection"""
+        self.__db = value
 
     def __getattr__(self, name):
+        return self.__tables[name]
+
+    def __getitem__(self, name):
         return self.__tables[name]
 
     def __init__(self, schema):
         self.__name = schema['Name']
         self.__description = schema.get('Description', '')
         self.__tables = {}
+        self.__db = None
 
         tables = schema.get('Tables', {})
         for key in tables:
-            self.__tables[key] = DSTable(key, tables[key])
+            self.__tables[key] = DSTable(self, key, tables[key])

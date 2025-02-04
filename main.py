@@ -4,7 +4,9 @@ Main program
 
 import json
 import traceback
+
 from schema.schema import DSSchema
+from database.databasemysql import DSDatabaseMySQL
 
 schema = {
         'Name': 'Syncytium',
@@ -12,6 +14,7 @@ schema = {
         'Tables' : {
                 'User': {
                     'Description' : 'Liste des utilisateurs',
+                    'Key' : 'Name',
                     'Fields' : {
                         'Name': {
                             'Description': 'Nom et prénom de l\'utilisateur', 
@@ -31,16 +34,47 @@ schema = {
     }
 
 try:
-    db = DSSchema(schema)
-    print(json.dumps(db.to_dict(), sort_keys=False, indent=2))
-    print(db.User.where(lambda t: t.Name.operator_in('Aymeric', 'Marie')))
-    print(db.User.where(lambda t: (t.Name == 'Aymeric') & (t.Age > 24) & t.PhoneNumber
-                                                                        .operator_in('01', '02'))
-                                                       .operator_not())
-    print(db.User.where(lambda t: (t.Name == 'Aymeric').operator_and(t.Age > 24,
-                                                                     t.PhoneNumber
-                                                                        .operator_in('01', '02'))
-                                                       .operator_not()))
+    schema = DSSchema(schema)
+    print(json.dumps(schema.to_dict(), sort_keys=False, indent=2))
+
+    with DSDatabaseMySQL("localhost", "root", "6t-8ItCG$%oIh47E=") as db:
+        print("connected", db.is_connected)
+        schema.database = db
+
+        userToto = schema.User.new()
+        userToto.Name = "Toto"
+        userToto.Age = 99
+        userToto.PhoneNumber = "99.99.99.99.99"
+
+        userTata = schema.User.new()
+        userTata.Name = "Tata"
+        userTata.Age = 88
+        userTata.PhoneNumber = "88.99.99.99.99"
+
+        db.begin_transaction()
+        schema.User.delete([userToto, userTata])
+        db.commit()
+
+        db.begin_transaction()
+        schema.User.insert([userToto, userTata])
+        db.commit()
+
+        db.begin_transaction()
+        userTutu = userToto.clone()
+        userTutu.PhoneNumber = "77.77"
+        userTutu.Age = 1
+        schema.User.update(userToto, userTutu)
+        db.commit()
+
+        for record in schema.User:
+            newrecord = record.clone()
+            newrecord.Name = record.Name + "*"
+            print('current', record)
+            print('new', newrecord)
+
+        for record in schema.User.select(lambda user: user.Name.in_('Aymeric', 'Marie')):
+            print(record)
+            print(record.Name)
 except:  # pylint: disable=bare-except
     traceback.print_exc()
 _ = input()
