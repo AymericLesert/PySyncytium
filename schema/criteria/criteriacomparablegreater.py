@@ -11,6 +11,12 @@ class DSCriteriaComparableGreater(DSCriteriaComparable):
       * a value.
     """
 
+    SIGN = '>'
+
+    def to_dict(self):
+        """Convert a greater criteria to a dict"""
+        return [ self.SIGN, self.fieldname, self.fieldvalue ]
+
     def __str__(self):
         return f"{self.fieldname} > {self.fieldvalue}"
 

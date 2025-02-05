@@ -46,6 +46,9 @@ class DSDatabaseMySQL(DSDatabase):
 
     def begin_transaction(self):
         """Start a new transaction"""
+        print("begin_transaction")
+        if self.__transaction is not None:
+            return
         self.__database.start_transaction()
         self.__transaction = self.__database.cursor()
 
@@ -123,6 +126,7 @@ class DSDatabaseMySQL(DSDatabase):
 
     def end_transaction(self):
         """Close the current transaction"""
+        print("end_transaction")
         self.__transaction.close()
         self.__transaction = None
 

@@ -11,6 +11,12 @@ class DSCriteriaComparableIn(DSCriteriaComparable):
       * a list of values.
     """
 
+    SIGN = 'in'
+
+    def to_dict(self):
+        """Convert a "in" criteria to a dict"""
+        return [ self.SIGN, self.fieldname, self._value ]
+
     @property
     def fieldvalue(self):
         """one of the list of values to compare"""

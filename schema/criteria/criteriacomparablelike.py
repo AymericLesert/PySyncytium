@@ -11,6 +11,12 @@ class DSCriteriaComparableLike(DSCriteriaComparable):
       * a value.
     """
 
+    SIGN = 'like'
+
+    def to_dict(self):
+        """Convert a like criteria to a dict"""
+        return [ self.SIGN, self.fieldname, self.fieldvalue ]
+
     def __str__(self):
         return f"{self.fieldname} like {self.fieldvalue}"
 
