@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d8645bba-a2b4-4bde-991c-3afbe19af729</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>main.py</StartupFile>
+    <StartupFile>api\api.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -25,10 +25,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="api\authentication.py" />
+    <Compile Include="api\__init__.py" />
     <Compile Include="database\cursor.py" />
     <Compile Include="database\databasemysql.py" />
     <Compile Include="database\database.py" />
     <Compile Include="database\__init__.py" />
+    <Compile Include="web\__init__.py" />
     <Compile Include="main_database.py" />
     <Compile Include="schema\criteria\criteriafactory.py" />
     <Compile Include="schema\record.py" />
@@ -54,15 +57,19 @@
     <Compile Include="schema\schema.py" />
     <Compile Include="schema\table.py" />
     <Compile Include="schema\__init__.py" />
-    <Compile Include="main.py" />
+    <Compile Include="api\api.py" />
+    <Compile Include="web\web.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include=".pylintrc" />
+    <Content Include="web\template\index.html" />
+    <Content Include="web\template\login.html" />
     <Content Include="LICENSE.txt" />
     <Content Include="README.md" />
     <Content Include="requirements.txt" />
     <Content Include=".env" />
+    <Content Include="web\template\protected.html" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -77,9 +84,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="database\" />
+    <Folder Include="api\" />
+    <Folder Include="web\" />
     <Folder Include="schema\" />
     <Folder Include="schema\criteria\" />
     <Folder Include="schema\field\" />
+    <Folder Include="web\template\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
