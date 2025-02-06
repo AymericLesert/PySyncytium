@@ -10,7 +10,7 @@ import traceback
 import os
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, Depends, Request, Form, Query, HTTPException
+from fastapi import FastAPI, Depends, Request, Form, Query, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -69,6 +69,25 @@ app = FastAPI()
 # ---------------
 
 templates = Jinja2Templates(directory="web/template")
+
+# ------------------
+# WebSocket handling
+# ------------------
+
+active_connections = []
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket, user: dict = Depends(decrypt_user_web)):
+    """Gestion des connexions WebSocket sécurisées."""
+    await websocket.accept()
+    active_connections.append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for connection in active_connections:
+                await connection.send_text(f"{user['sub']}: {data}")
+    except WebSocketDisconnect:
+        active_connections.remove(websocket)
 
 # ---------------------------------------
 # Static files and static protected files
