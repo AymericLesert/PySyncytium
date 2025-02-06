@@ -112,6 +112,7 @@ class DSDatabaseMySQL(DSDatabase):
             for value in values:
                 keys.append(tuple([value[dstable.key]]))
         else:
+            print(values)
             keys.append(tuple([values[dstable.key]]))
 
         count = len(keys)
@@ -127,7 +128,8 @@ class DSDatabaseMySQL(DSDatabase):
     def end_transaction(self):
         """Close the current transaction"""
         print("end_transaction")
-        self.__transaction.close()
+        if self.__transaction is not None:
+            self.__transaction.close()
         self.__transaction = None
 
     def commit(self):

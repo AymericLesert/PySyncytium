@@ -20,7 +20,8 @@ class DSTable:
         return {
                 'Name': self.name,
                 'Description': self.description,
-                'Fields': fields
+                'Fields': fields,
+                'Key': self.key
             }
 
     @property
