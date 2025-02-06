@@ -4,22 +4,18 @@ Test program (FastAPI)
 
 import json
 import traceback
-import datetime
 import os
 from dotenv import load_dotenv
 
-import jwt
-from fastapi import FastAPI, Header, Path, Depends, HTTPException, Security
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import FastAPI, Header, Path, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from api.authentication import new_token, decrypt_user_api
 
 from schema.schema import DSSchema
 from schema.criteria.criteriafactory import factory as criteriafactory
 from database.databasemysql import DSDatabaseMySQL
 
 load_dotenv()
-
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "mysecret")
-ALGORITHM = "HS256"
 
 SCHEMA = {
         'Name': 'Syncytium',
@@ -62,48 +58,6 @@ router = FastAPI(title="Syncytium",
                  description="Description how to get access to the API Syncytium",
                  version="0.0.1")
 
-# Handle the authentification user
-# ---------------------------------
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
-
-fake_users_db = {
-    "test": {
-        "username": "test",
-        "password": "password",  # ⚠️ Remplace cela par un hash sécurisé en production
-        "schema": "Syncytium"
-    }
-}
-
-def create_access_token(data: dict, expires_delta: int = 30):
-    """Create a JWT Token containing current information of a new valid session"""
-    to_encode = data.copy()
-    expire = datetime.datetime.utcnow() + datetime.timedelta(minutes=expires_delta)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-@router.post("/token")
-async def get_token(form: OAuth2PasswordRequestForm = Depends()):
-    """Génère un token pour un utilisateur"""
-    user = fake_users_db.get(form.username)
-    if not user or user["password"] != form.password:
-        raise HTTPException(status_code=400, detail="Invalid username or password")
-    return {
-        "access_token": create_access_token({"sub": form.username, "schema": user["schema"]}), 
-        "token_type": "bearer"
-        }
-
-def get_user(token = Security(oauth2_scheme)):
-    """Retrieve user profile"""
-    # pylint: disable=raise-missing-from
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
 # Handle the API Route
 # --------------------
 
@@ -132,8 +86,13 @@ def get_newrecord(table = Path(..., title="TABLE"),
 # API handles the CRUD into the database
 # --------------------------------------
 
+@router.post("/token")
+async def get_token(form: OAuth2PasswordRequestForm = Depends()):
+    """Génère un token pour un utilisateur"""
+    return new_token(form.username, form.password)
+
 @router.get("/profil")
-def get_profil(user = Depends(get_user)):
+def get_profil(user = Depends(decrypt_user_api)):
     """
     Retrieve the profil of the current user
     """
@@ -142,7 +101,7 @@ def get_profil(user = Depends(get_user)):
 @router.post("/schema/{table}/")
 async def insert(table,
                  record = Depends(get_record),
-                 user = Depends(get_user)):
+                 user = Depends(decrypt_user_api)):
     """
     Create a new record into a table
     """
@@ -155,7 +114,7 @@ async def insert(table,
 @router.get("/schema/{table}/")
 async def select(table,
                  query = None,
-                 user = Depends(get_user)):
+                 user = Depends(decrypt_user_api)):
     """
     Select a list of records from a table
     * query : describes a filter on the list of records 
@@ -173,7 +132,7 @@ async def select(table,
 async def update(table,
                  oldrecord = Depends(get_oldrecord),
                  newrecord = Depends(get_newrecord),
-                 user = Depends(get_user)):
+                 user = Depends(decrypt_user_api)):
     """
     Update an existing record within a new record into a table
     * oldrecord has to match the record to update
@@ -190,7 +149,7 @@ async def update(table,
 @router.delete("/schema/{table}/")
 async def delete(table,
                  record = Depends(get_record),
-                 user = Depends(get_user)):
+                 user = Depends(decrypt_user_api)):
     """
     Delete an existing record from a table
     """
