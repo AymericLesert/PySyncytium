@@ -1,56 +1,16 @@
 """
-Test program (FastAPI)
+Test program (API)
 """
 
 import json
-import traceback
-import os
-from dotenv import load_dotenv
 
 from fastapi import FastAPI, Header, Path, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from api.authentication import new_token, decrypt_user_api
 
-from schema.schema import DSSchema
+from interface.authentication import new_token, decrypt_user_api
+from interface.db import get_db, schema
+
 from schema.criteria.criteriafactory import factory as criteriafactory
-from database.databasemysql import DSDatabaseMySQL
-
-load_dotenv()
-
-SCHEMA = {
-        'Name': 'Syncytium',
-        'Description' : 'Schéma de test',
-        'Tables' : {
-                'User': {
-                    'Description' : 'Liste des utilisateurs',
-                    'Key' : 'Name',
-                    'Fields' : {
-                        'Name': {
-                            'Description': 'Nom et prénom de l\'utilisateur', 
-                            'Type' : 'String',
-                            'MaxLength': 80
-                        },
-                        'PhoneNumber' : {
-                            'Type' : 'String',
-                            'MaxLength': 14
-                        },
-                        'Age' : {
-                            'Type' : 'Integer'
-                        }
-                    }
-                }
-        }
-    }
-
-try:
-    schema = DSSchema(SCHEMA)
-    db = DSDatabaseMySQL(os.getenv("DATABASE_HOSTNAME", "localhost"),
-                         os.getenv("DATABASE_USERNAME"),
-                         os.getenv("DATABASE_PASSWORD"))
-    db.connect()
-    schema.database = db
-except:  # pylint: disable=bare-except
-    traceback.print_exc()
 
 # Handle the API routes
 
@@ -106,9 +66,10 @@ async def insert(table,
     Create a new record into a table
     """
     print(user)
-    db.begin_transaction()
-    newrecord = schema[table].insert(record)
-    db.commit()
+    with get_db() as db:
+        db.begin_transaction()
+        newrecord = schema[table].insert(record)
+        db.commit()
     return newrecord.to_dict()
 
 @router.get("/schema/{table}/")
@@ -121,12 +82,13 @@ async def select(table,
     
     Example : ['=', 'Name', 'Tutu'] => List of records having 'Name' = 'Tutu'
     """
-    print(user)
-    if query is None:
-        return { table: [record.to_dict() for record in schema[table]] }
-    return { table: [record.to_dict()
-                     for record
-                     in schema[table].select(lambda record: criteriafactory(json.loads(query), record))] }
+    with get_db():
+        print(user)
+        if query is None:
+            return { table: [record.to_dict() for record in schema[table]] }
+        return { table: [record.to_dict()
+                         for record
+                         in schema[table].select(lambda record: criteriafactory(json.loads(query), record))] }
 
 @router.put("/schema/{table}/")
 async def update(table,
@@ -139,9 +101,10 @@ async def update(table,
     * newrecord has to contain the fields to update
     """
     print(user)
-    db.begin_transaction()
-    newrecordupdated = schema[table].update(oldrecord, newrecord)
-    db.commit()
+    with get_db() as db:
+        db.begin_transaction()
+        newrecordupdated = schema[table].update(oldrecord, newrecord)
+        db.commit()
     if newrecordupdated is None:
         raise HTTPException(status_code=404, detail="Key missing")
     return newrecordupdated.to_dict()
@@ -154,7 +117,8 @@ async def delete(table,
     Delete an existing record from a table
     """
     print(user)
-    db.begin_transaction()
-    oldrecord = schema[table].delete(record)
-    db.commit()
+    with get_db() as db:
+        db.begin_transaction()
+        oldrecord = schema[table].delete(record)
+        db.commit()
     return oldrecord.to_dict()

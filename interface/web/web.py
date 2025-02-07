@@ -5,62 +5,15 @@ Test program (FastAPI - FrontEnd)
 # pylint: disable=eval-used
 # pylint: disable=unused-argument
 
-import json
-import traceback
 import os
-from dotenv import load_dotenv
 
-from fastapi import FastAPI, Depends, Request, Form, Query, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Depends, Request, Form, Query, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from api.authentication import new_token, decrypt_user_web
-
-from schema.schema import DSSchema
-from database.databasemysql import DSDatabaseMySQL
-
-load_dotenv()
-
-SCHEMA = {
-        'Name': 'Syncytium',
-        'Description' : 'Schéma de test',
-        'Tables' : {
-                'User': {
-                    'Description' : 'Liste des utilisateurs',
-                    'Key' : 'Name',
-                    'Fields' : {
-                        'Name': {
-                            'Description': 'Nom et prénom de l\'utilisateur', 
-                            'Type' : 'String',
-                            'MaxLength': 80
-                        },
-                        'PhoneNumber' : {
-                            'Type' : 'String',
-                            'MaxLength': 14
-                        },
-                        'Age' : {
-                            'Type' : 'Integer'
-                        }
-                    }
-                }
-        }
-    }
-
-def get_db():
-    """Retrieve a database instance"""
-    db = DSDatabaseMySQL(os.getenv("DATABASE_HOSTNAME", "localhost"),
-                         os.getenv("DATABASE_USERNAME"),
-                         os.getenv("DATABASE_PASSWORD"))
-    db.connect()
-    schema.database = db
-    return db
-
-try:
-    schema = DSSchema(SCHEMA)
-    print(json.dumps(schema.to_dict(), sort_keys=False, indent=2))
-except:  # pylint: disable=bare-except
-    traceback.print_exc()
+from interface.authentication import new_token, decrypt_user_web
+from interface.db import get_db, schema
 
 app = FastAPI()
 
@@ -68,37 +21,18 @@ app = FastAPI()
 # Templates files
 # ---------------
 
-templates = Jinja2Templates(directory="web/template")
-
-# ------------------
-# WebSocket handling
-# ------------------
-
-active_connections = []
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, user: dict = Depends(decrypt_user_web)):
-    """Gestion des connexions WebSocket sécurisées."""
-    await websocket.accept()
-    active_connections.append(websocket)
-    try:
-        while True:
-            data = await websocket.receive_text()
-            for connection in active_connections:
-                await connection.send_text(f"{user['sub']}: {data}")
-    except WebSocketDisconnect:
-        active_connections.remove(websocket)
+templates = Jinja2Templates(directory="interface/web/template")
 
 # ---------------------------------------
 # Static files and static protected files
 # ---------------------------------------
 
-app.mount("/static", StaticFiles(directory="web/public"), name="static")
+app.mount("/static", StaticFiles(directory="interface/web/public"), name="static")
 
-@app.get("/protected-files/{filename}")
+@app.get("/script/{filename}")
 def get_protected_file(filename, user = Depends(decrypt_user_web)):
     """Extract a file within an authenticated user"""
-    file_path = os.path.join("web/protected", filename)
+    file_path = os.path.join("interface/web/script", filename)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(file_path)
@@ -240,3 +174,14 @@ async def post_table_delete(table, key, request: Request, user = Depends(decrypt
         schema[table].delete(dict(record))
         db.commit()
     return RedirectResponse(url=f"/select/{table}", status_code=303)
+
+@app.get("/chat", response_class=HTMLResponse)
+def get_chat(request: Request, user = Depends(decrypt_user_web)):
+    """Access to the chat page"""
+    if user is None:
+        return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
+    return templates.TemplateResponse("chat.html",
+                                      {
+                                          "request": request,
+                                          "user": user
+                                      })

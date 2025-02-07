@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Accueil</title>
+</head>
+<body>
+    <h2>Bienvenue, {{ user.sub }} !</h2>
+    <p>Vous êtes authentifié avec succès.</p>
+    <p>Liste des tables</p>
+    <ul>
+        {% for table in schema.Tables %}
+        <li><a href="select/{{table}}">{{table}}</a></li>
+        {% endfor %}
+        <li><a href="chat">Chat</a></li>
+    </ul>
+</body>
+</html>
