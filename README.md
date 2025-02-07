@@ -5,7 +5,7 @@
 ```
 cd PySyncytium
 env\Script\activate
-fastapi dev api\api.py
+fastapi dev interface\api\api.py
 ```
 
 ## Démarrage du front HTML
@@ -13,5 +13,13 @@ fastapi dev api\api.py
 ```
 cd PySyncytium
 env\Script\activate
-uvicorn web.web:app --reload --port 8080
+uvicorn interface.web.web:app --reload --port 8080
+```
+
+## Démarrage du serveur WebSocket
+
+```
+cd PySyncytium
+env\Script\activate
+uvicorn interface.websocket.websocket:app --reload --port 8081
 ```
