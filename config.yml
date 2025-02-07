@@ -1,0 +1,3 @@
+logging: config/logging.yml
+database: config/database.yml
+interface: config/interface.yml

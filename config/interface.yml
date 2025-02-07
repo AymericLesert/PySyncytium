@@ -1,0 +1,3 @@
+api: interface/api.yml
+web: interface/web.yml
+websocket: interface/websocket.yml

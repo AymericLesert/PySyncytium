@@ -25,6 +25,8 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="configuration.py" />
+    <Compile Include="config\logging.yml" />
     <Compile Include="interface\authentication.py" />
     <Compile Include="interface\api\__init__.py" />
     <Compile Include="database\cursor.py" />
@@ -70,6 +72,11 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include=".pylintrc" />
+    <Content Include="config\interface\websocket.yml" />
+    <Content Include="config\interface\web.yml" />
+    <Content Include="config\interface\api.yml" />
+    <Content Include="config\database.yml" />
+    <Content Include="config\interface.yml" />
     <Content Include="interface\web\script\chat.js" />
     <Content Include="interface\web\template\chat.html" />
     <Content Include="interface\web\template\update.html" />
@@ -78,6 +85,7 @@
     <Content Include="interface\web\template\select.html" />
     <Content Include="interface\web\template\login.html" />
     <Content Include="LICENSE.txt" />
+    <Content Include="config.yml" />
     <Content Include="README.md" />
     <Content Include="requirements.txt" />
     <Content Include=".env" />
@@ -95,11 +103,14 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="config\interface\" />
     <Folder Include="database\" />
     <Folder Include="interface\api\" />
     <Folder Include="interface\" />
     <Folder Include="interface\websocket\" />
     <Folder Include="interface\web\" />
+    <Folder Include="config\" />
+    <Folder Include="log\" />
     <Folder Include="schema\" />
     <Folder Include="schema\criteria\" />
     <Folder Include="schema\field\" />
