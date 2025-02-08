@@ -43,6 +43,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="interface\web\__init__.py" />
+    <Compile Include="log\logger.py" />
+    <Compile Include="log\__init__.py" />
     <Compile Include="main_config.py" />
     <Compile Include="main_database.py" />
     <Compile Include="schema\criteria\criteriafactory.py" />
@@ -117,6 +119,7 @@
     <Folder Include="config\" />
     <Folder Include="log\" />
     <Folder Include="configuration\" />
+    <Folder Include="logs\" />
     <Folder Include="schema\" />
     <Folder Include="schema\criteria\" />
     <Folder Include="schema\field\" />
