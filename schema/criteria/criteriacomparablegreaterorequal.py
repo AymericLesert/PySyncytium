@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 This module handles a comparable criteria between a field and a value.
 """

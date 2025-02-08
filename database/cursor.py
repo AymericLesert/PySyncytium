@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 This module handles a cursor on the database.
 """
