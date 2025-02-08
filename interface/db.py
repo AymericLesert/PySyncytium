@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Test program (FastAPI - FrontEnd)
 """

@@ -25,7 +25,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="configuration.py" />
+    <Compile Include="configuration\configuration.py" />
+    <Compile Include="configuration\configurationitem.py" />
+    <Compile Include="configuration\__init__.py" />
     <Compile Include="config\logging.yml" />
     <Compile Include="interface\authentication.py" />
     <Compile Include="interface\api\__init__.py" />
@@ -41,6 +43,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="interface\web\__init__.py" />
+    <Compile Include="main_config.py" />
     <Compile Include="main_database.py" />
     <Compile Include="schema\criteria\criteriafactory.py" />
     <Compile Include="schema\record.py" />
@@ -90,6 +93,8 @@
     <Content Include="requirements.txt" />
     <Content Include=".env" />
     <Content Include="interface\web\template\index.html" />
+    <Content Include="VERSION" />
+    <Content Include="APPLICATION" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -111,6 +116,7 @@
     <Folder Include="interface\web\" />
     <Folder Include="config\" />
     <Folder Include="log\" />
+    <Folder Include="configuration\" />
     <Folder Include="schema\" />
     <Folder Include="schema\criteria\" />
     <Folder Include="schema\field\" />

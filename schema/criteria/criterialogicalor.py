@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 This module handles a criteria linking criterias within boolean operator 'Or'.
 """

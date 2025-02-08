@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """Create a criteria from a dictionary"""
 
 from schema.criteria.criteria import DSCriteria

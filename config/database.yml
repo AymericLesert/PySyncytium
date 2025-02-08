@@ -1,0 +1,8 @@
+hostname: "localhost"
+username: ${DATABASE_USERNAME}
+password*: ${DATABASE_PASSWORD}
+basename:
+- DEV
+- UAT
+- PROD
+essai: ${hostname}/${.database.username}:${basename[1]}
