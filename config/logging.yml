@@ -30,6 +30,31 @@ handlers:
         backupCount: 10
         encoding: utf8
 
+    server:
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        formatter: standard
+        filename: ${SYNCYTIUM_LOG_DIRECTORY}/fastapi-${date:%Y-%m-%d}.log
+        maxBytes: 16777216 # 16Mb
+        backupCount: 10
+        encoding: utf8
+
+loggers:
+    fastapi:
+        level: DEBUG
+        handlers: [console, file, server]
+        propagate: no
+
+    uvicorn:
+        level: INFO
+        handlers: [console, file, server]
+        propagate: no
+
+    uvicorn.access:
+        level: INFO
+        handlers: [console, file, server]
+        propagate: no
+
 root:
     level: NOTSET
     handlers: [console, file]

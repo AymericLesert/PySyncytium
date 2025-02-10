@@ -25,13 +25,13 @@ from interface.db import get_db, schema
 
 load_dotenv()
 
+configuration = DSConfiguration('config.yml')
+log = DSLogger(configuration)
+log.open()
+
 @asynccontextmanager
 async def lifespan(router):
     """Attach the logger within the FastAPI interface"""
-
-    configuration = DSConfiguration('config.yml')
-    log = DSLogger(configuration)
-    log.open()
     yield
     log.close()
 
