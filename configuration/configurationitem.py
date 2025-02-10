@@ -7,6 +7,7 @@ This module handles a sub part of the configuration.
 
 import re
 import os
+import datetime
 
 class DSConfigurationItem:
     """This class describes a generic item from a part of configuration"""
@@ -75,8 +76,30 @@ class DSConfigurationItem:
             if "?" in key:
                 default_value = key.split("?")[1]
                 key = key.split("?")[0]
+            value = default_value
 
-            # Vérification d'un élément de la configuration
+            # Check keywords
+
+            if key == 'VERSION':
+                try:
+                    value = self.root.version
+                except:
+                    pass
+                return value
+            if key == 'APPLICATION':
+                try:
+                    value = self.root.application
+                except:
+                    pass
+                return value
+            if key.startswith("date:"):
+                try:
+                    value = datetime.datetime.now().strftime(key[5:])
+                except:
+                    pass
+                return value
+
+            # Check existing the configuration item
 
             if key[0] == '.':
                 value = self.root.get_property(key[1:])
@@ -85,7 +108,7 @@ class DSConfigurationItem:
             if value is not None:
                 return value
 
-            # Vérification d'une variable d'environnement
+            # Check environment variable
 
             value = os.getenv(key)
             if value is None:
