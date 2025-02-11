@@ -5,14 +5,32 @@ Test program (FastAPI - WebSocket)
 # pylint: disable=eval-used
 # pylint: disable=unused-argument
 
+from contextlib import asynccontextmanager
 import json
+from dotenv import load_dotenv
 
 from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect
+
+from configuration.configuration import DSConfiguration
+from logger.logger import DSLogger
+from logger.loggerobject import asyncloggerexecutiontime
 
 from interface.authentication import decrypt_user_web
 from interface.db import get_db, schema
 
-app = FastAPI()
+load_dotenv()
+
+configuration = DSConfiguration('config.yml')
+log = DSLogger(configuration)
+log.open()
+
+@asynccontextmanager
+async def lifespan(router):
+    """Attach the logger within the FastAPI interface"""
+    yield
+    log.close()
+
+app = FastAPI(lifespan=lifespan)
 
 # ------------------
 # WebSocket method
@@ -60,6 +78,7 @@ async def websocket_service_table(websocket, user, table):
 active_connections = []
 
 @app.websocket("/ws")
+@asyncloggerexecutiontime
 async def websocket_endpoint(websocket: WebSocket, user: dict = Depends(decrypt_user_web)):
     """Gestion des connexions WebSocket sécurisées."""
     await websocket.accept()

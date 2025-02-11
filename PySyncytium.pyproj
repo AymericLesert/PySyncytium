@@ -76,6 +76,9 @@
     <Compile Include="schema\__init__.py" />
     <Compile Include="interface\api\api.py" />
     <Compile Include="interface\web\web.py" />
+    <Compile Include="api.py" />
+    <Compile Include="websocket.py" />
+    <Compile Include="web.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />

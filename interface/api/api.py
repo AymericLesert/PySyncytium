@@ -4,10 +4,16 @@
 Test program (API)
 """
 
+from contextlib import asynccontextmanager
 import json
+from dotenv import load_dotenv
 
 from fastapi import FastAPI, Header, Path, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+
+from configuration.configuration import DSConfiguration
+from logger.logger import DSLogger
+from logger.loggerobject import asyncloggerexecutiontime
 
 from interface.authentication import new_token, decrypt_user_api
 from interface.db import get_db, schema
@@ -16,9 +22,22 @@ from schema.criteria.criteriafactory import factory as criteriafactory
 
 # Handle the API routes
 
-router = FastAPI(title="Syncytium",
-                 description="Description how to get access to the API Syncytium",
-                 version="0.0.1")
+load_dotenv()
+
+configuration = DSConfiguration('config.yml')
+log = DSLogger(configuration)
+log.open()
+
+@asynccontextmanager
+async def lifespan(router):
+    """Attach the logger within the FastAPI interface"""
+    yield
+    log.close()
+
+app = FastAPI(title="Syncytium",
+              description="Description how to get access to the API Syncytium",
+              version="0.0.1",
+              lifespan=lifespan)
 
 # Handle the API Route
 # --------------------
@@ -48,19 +67,22 @@ def get_newrecord(table = Path(..., title="TABLE"),
 # API handles the CRUD into the database
 # --------------------------------------
 
-@router.post("/token")
+@app.post("/token")
+@asyncloggerexecutiontime
 async def get_token(form: OAuth2PasswordRequestForm = Depends()):
     """Génère un token pour un utilisateur"""
     return new_token(form.username, form.password)
 
-@router.get("/profil")
+@app.get("/profil")
+@asyncloggerexecutiontime
 def get_profil(user = Depends(decrypt_user_api)):
     """
     Retrieve the profil of the current user
     """
     return {"message": "You are authenticated", "user": user}
 
-@router.post("/schema/{table}/")
+@app.post("/schema/{table}/")
+@asyncloggerexecutiontime
 async def insert(table,
                  record = Depends(get_record),
                  user = Depends(decrypt_user_api)):
@@ -74,7 +96,8 @@ async def insert(table,
         db.commit()
     return newrecord.to_dict()
 
-@router.get("/schema/{table}/")
+@app.get("/schema/{table}/")
+@asyncloggerexecutiontime
 async def select(table,
                  query = None,
                  user = Depends(decrypt_user_api)):
@@ -92,7 +115,8 @@ async def select(table,
                          for record
                          in schema[table].select(lambda record: criteriafactory(json.loads(query), record))] }
 
-@router.put("/schema/{table}/")
+@app.put("/schema/{table}/")
+@asyncloggerexecutiontime
 async def update(table,
                  oldrecord = Depends(get_oldrecord),
                  newrecord = Depends(get_newrecord),
@@ -111,7 +135,8 @@ async def update(table,
         raise HTTPException(status_code=404, detail="Key missing")
     return newrecordupdated.to_dict()
 
-@router.delete("/schema/{table}/")
+@app.delete("/schema/{table}/")
+@asyncloggerexecutiontime
 async def delete(table,
                  record = Depends(get_record),
                  user = Depends(decrypt_user_api)):

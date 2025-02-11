@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=bare-except
 
 """
 Test program (FastAPI - FrontEnd)
@@ -7,7 +8,6 @@ Test program (FastAPI - FrontEnd)
 # pylint: disable=eval-used
 # pylint: disable=unused-argument
 
-import json
 import traceback
 import os
 from dotenv import load_dotenv
@@ -53,6 +53,5 @@ def get_db():
 
 try:
     schema = DSSchema(SCHEMA)
-    print(json.dumps(schema.to_dict(), sort_keys=False, indent=2))
-except:  # pylint: disable=bare-except
+except:
     traceback.print_exc()

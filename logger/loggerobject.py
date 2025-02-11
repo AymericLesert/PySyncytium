@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=bare-except
 
 """
 This module describes an abstract class of logger item.
@@ -68,24 +69,30 @@ def asyncloggerexecutiontime(func):
     """Trace the function calling and execution time"""
     @wraps(func)
     async def wrapper(*args, **kwargs):
-        username = kwargs.get("user", None)
-        if username:
-            username = username['sub']
-        else:
-            try:
-                username = os.getlogin()
-            except OSError:
-                username = getpass.getuser()
+        try:
+            username = kwargs.get("user", None)
+            if username:
+                username = username['sub']
+            else:
+                try:
+                    username = os.getlogin()
+                except OSError:
+                    username = getpass.getuser()
 
-        if DSLogger.Instance:
-            DSLogger.Instance.debug(username, func.__name__, __name__, "Starting ...")
+            if DSLogger.Instance:
+                DSLogger.Instance.debug(username, func.__name__, __name__, "Starting ...")
+                DSLogger.Instance.verbose(username, func.__name__, __name__, f"Execution within parameters ({args}, {kwargs})...")
 
-        start_time = time.time()
-        result = await func(*args, **kwargs)
-        end_time = time.time()
-        execution_time = end_time - start_time
+            start_time = time.time()
+            result = await func(*args, **kwargs)
+            end_time = time.time()
+            execution_time = end_time - start_time
 
-        if DSLogger.Instance:
-            DSLogger.Instance.info(username, func.__name__, __name__, f"Execution in {execution_time:.4f} seconds")
-        return result
+            if DSLogger.Instance:
+                DSLogger.Instance.info(username, func.__name__, __name__, f"Execution in {execution_time:.4f} seconds")
+
+            return result
+        except:
+            DSLogger.Instance.exception(username, func.__name__, __name__, "Error on executing function")
+            return None
     return wrapper

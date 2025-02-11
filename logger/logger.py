@@ -26,7 +26,39 @@ def format_message(user, klass, module, level, message):
 class DSLogger:
     """This class handles a common logger for the application"""
 
+    class DSLoggerHandler(logging.Handler):
+        """Customerized handler written logs from FastAPI to DSLogger."""        
+        def emit(self, record):
+            """Write a message into DSLogger."""
+            if not DSLogger.Instance:
+                return
+            log_entry = self.format(record)
+            if record.levelno == logging.DEBUG:
+                DSLogger.Instance.debug("FastAPI", record.name, record.module, log_entry)
+            elif record.levelno == logging.INFO:
+                DSLogger.Instance.info("FastAPI", record.name, record.module, log_entry)
+            elif record.levelno == logging.WARNING:
+                DSLogger.Instance.warning("FastAPI", record.name, record.module, log_entry)
+            elif record.levelno == logging.ERROR:
+                DSLogger.Instance.error("FastAPI", record.name, record.module, log_entry)
+            elif record.levelno == logging.CRITICAL:
+                DSLogger.Instance.critical("FastAPI", record.name, record.module, log_entry)
+
     Instance = None
+
+    def __setup_fastapi_logging(self):
+        """Set fastapi and uvicorn logger into the logging"""
+        fastapi_logger = logging.getLogger("fastapi")
+        uvicorn_logger = logging.getLogger("uvicorn")
+
+        handler = DSLogger.DSLoggerHandler()
+        handler.setFormatter(logging.Formatter("%(message)s"))
+
+        fastapi_logger.addHandler(handler)
+        uvicorn_logger.addHandler(handler)
+        fastapi_logger.setLevel(logging.INFO)
+        uvicorn_logger.setLevel(logging.INFO)
+        self.__logger.info("Logger fastapi and uvicorn added")
 
     def __writeconfiguration(self):
         """This function writes the items of the current configuration into the log file"""
@@ -93,13 +125,17 @@ class DSLogger:
                             change = True
                             break
 
-                if change:
-                    self.__logger.info("Reloading configuration due to a new filename ...")
-                    self.__logger.info("----------------------------------------------")
+                if not change:
+                    return
 
-                    logging.config.dictConfig(self.__configuration.items.logging.to_dict())
-                    self.__logger.info("----------------------------------------------")
-                    self.__writeconfiguration()
+                self.__logger.info("Reloading configuration due to a new filename ...")
+                self.__logger.info("----------------------------------------------")
+
+                logging.config.dictConfig(self.__configuration.items.logging.to_dict())
+                self.__setup_fastapi_logging()
+
+                self.__logger.info("----------------------------------------------")
+                self.__writeconfiguration()
             except:
                 pass
 
@@ -135,7 +171,7 @@ class DSLogger:
 
     def verbose(self, user, klass, module, message):
         """This function traces a verbose message into the log file"""
-        if self.isverbose:
+        if not self.isverbose:
             return
         with self.__lock:
             try:
@@ -226,3 +262,5 @@ class DSLogger:
         if interval is not None:
             self.__cleanup_timer = DSLoggerTimer(self.cleanup, interval)
         self.__class__.Instance = self
+
+        self.__setup_fastapi_logging()
