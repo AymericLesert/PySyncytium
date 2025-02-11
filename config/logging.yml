@@ -1,14 +1,19 @@
 version: 1
 verbose: True
 
-reload:
-    interval: 60
+syncytium:
+    reload:
+        interval: 60
 
-cleanup:
-    interval: 86400
-    directory: ${SYNCYTIUM_LOG_DIRECTORY}
-    pattern: "^${APPLICATION}-.*\\.log$"
-    nbdays: 20
+    cleanup:
+        interval: 86400
+        directory: ${SYNCYTIUM_LOG_DIRECTORY}
+        pattern: "^${APPLICATION}-.*\\.log$"
+        nbdays: 20
+
+    loggers:
+        - fastapi
+        - uvicorn
 
 formatters:
     standard:

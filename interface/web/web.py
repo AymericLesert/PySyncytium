@@ -7,35 +7,24 @@ Test program (FastAPI - FrontEnd)
 # pylint: disable=eval-used
 # pylint: disable=unused-argument
 
-from contextlib import asynccontextmanager
 import os
-from dotenv import load_dotenv
 
 from fastapi import FastAPI, Depends, Request, Form, Query, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from configuration.configuration import DSConfiguration
 from logger.logger import DSLogger
 from logger.loggerobject import asyncloggerexecutiontime
 
 from interface.authentication import new_token, decrypt_user_web
 from interface.db import get_db, schema
 
-load_dotenv()
+# Handle the API routes
 
-configuration = DSConfiguration('config.yml')
-log = DSLogger(configuration)
-log.open()
-
-@asynccontextmanager
-async def lifespan(router):
-    """Attach the logger within the FastAPI interface"""
-    yield
-    log.close()
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(title=DSLogger.Instance.application,
+              description="Web Interface - Getting HTML pages",
+              version=DSLogger.Instance.version)
 
 # ---------------
 # Templates files

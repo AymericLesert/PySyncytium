@@ -4,14 +4,11 @@
 Test program (API)
 """
 
-from contextlib import asynccontextmanager
 import json
-from dotenv import load_dotenv
 
 from fastapi import FastAPI, Header, Path, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from configuration.configuration import DSConfiguration
 from logger.logger import DSLogger
 from logger.loggerobject import asyncloggerexecutiontime
 
@@ -22,22 +19,9 @@ from schema.criteria.criteriafactory import factory as criteriafactory
 
 # Handle the API routes
 
-load_dotenv()
-
-configuration = DSConfiguration('config.yml')
-log = DSLogger(configuration)
-log.open()
-
-@asynccontextmanager
-async def lifespan(router):
-    """Attach the logger within the FastAPI interface"""
-    yield
-    log.close()
-
-app = FastAPI(title="Syncytium",
-              description="Description how to get access to the API Syncytium",
-              version="0.0.1",
-              lifespan=lifespan)
+app = FastAPI(title=DSLogger.Instance.application,
+              description="API Interface - Getting service access",
+              version=DSLogger.Instance.version)
 
 # Handle the API Route
 # --------------------

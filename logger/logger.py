@@ -27,38 +27,37 @@ class DSLogger:
     """This class handles a common logger for the application"""
 
     class DSLoggerHandler(logging.Handler):
-        """Customerized handler written logs from FastAPI to DSLogger."""        
+        """Customerized handler written logs from FastAPI to DSLogger."""
         def emit(self, record):
             """Write a message into DSLogger."""
             if not DSLogger.Instance:
                 return
             log_entry = self.format(record)
             if record.levelno == logging.DEBUG:
-                DSLogger.Instance.debug("FastAPI", record.name, record.module, log_entry)
+                DSLogger.Instance.debug("Syncytium", record.name, record.module, log_entry)
             elif record.levelno == logging.INFO:
-                DSLogger.Instance.info("FastAPI", record.name, record.module, log_entry)
+                DSLogger.Instance.info("Syncytium", record.name, record.module, log_entry)
             elif record.levelno == logging.WARNING:
-                DSLogger.Instance.warning("FastAPI", record.name, record.module, log_entry)
+                DSLogger.Instance.warning("Syncytium", record.name, record.module, log_entry)
             elif record.levelno == logging.ERROR:
-                DSLogger.Instance.error("FastAPI", record.name, record.module, log_entry)
+                DSLogger.Instance.error("Syncytium", record.name, record.module, log_entry)
             elif record.levelno == logging.CRITICAL:
-                DSLogger.Instance.critical("FastAPI", record.name, record.module, log_entry)
+                DSLogger.Instance.critical("Syncytium", record.name, record.module, log_entry)
 
     Instance = None
 
-    def __setup_fastapi_logging(self):
-        """Set fastapi and uvicorn logger into the logging"""
-        fastapi_logger = logging.getLogger("fastapi")
-        uvicorn_logger = logging.getLogger("uvicorn")
-
+    def __setup_logging(self):
+        """Set loggers from frameworks into the logging"""
         handler = DSLogger.DSLoggerHandler()
         handler.setFormatter(logging.Formatter("%(message)s"))
 
-        fastapi_logger.addHandler(handler)
-        uvicorn_logger.addHandler(handler)
-        fastapi_logger.setLevel(logging.INFO)
-        uvicorn_logger.setLevel(logging.INFO)
-        self.__logger.info("Logger fastapi and uvicorn added")
+        for name in self.__configuration.items.get_property('logging.syncytium.loggers', []):
+            if name in logging.Logger.manager.loggerDict:
+                continue
+            self.__logger.debug("Adding logger '%s' ...", name)
+            logger = logging.getLogger(name)
+            logger.addHandler(handler)
+            logger.setLevel(logging.INFO)
 
     def __writeconfiguration(self):
         """This function writes the items of the current configuration into the log file"""
@@ -96,6 +95,16 @@ class DSLogger:
         """Indicates if the log file is debug mode"""
         return self.__debug
 
+    @property
+    def version(self):
+        """Retrieve the current version of the package"""
+        return self.__configuration.version
+
+    @property
+    def application(self):
+        """Retrieve the current application name"""
+        return self.__configuration.application
+
     def open(self):
         """This function opens the current and writes some common informations"""
         self.__logger.info("----------------------------------------------")
@@ -132,7 +141,7 @@ class DSLogger:
                 self.__logger.info("----------------------------------------------")
 
                 logging.config.dictConfig(self.__configuration.items.logging.to_dict())
-                self.__setup_fastapi_logging()
+                self.__setup_logging()
 
                 self.__logger.info("----------------------------------------------")
                 self.__writeconfiguration()
@@ -147,10 +156,11 @@ class DSLogger:
             self.__logger.debug("(V) Cleaning up files ...")
             try:
                 limitdate = datetime.datetime.now() + \
-                            datetime.timedelta(seconds=-self.__configuration.items.logging.cleanup.nbdays * 86400)
-                pattern = re.compile(self.__configuration.items.logging.cleanup.pattern)
+                            datetime.timedelta(seconds=-self.__configuration.items.logging.syncytium.cleanup.nbdays * 86400)
+                pattern = re.compile(self.__configuration.items.logging.syncytium.cleanup.pattern)
                 self.__logger.info("Cleaning up older file than %s ...", limitdate.strftime("%Y-%m-%d %H:%M:%S"))
-                for file in glob.glob(os.path.join(os.getcwd(), self.__configuration.items.logging.cleanup.directory, '*')):
+                for file in glob.glob(os.path.join(os.getcwd(),
+                                                   self.__configuration.items.logging.syncytium.cleanup.directory, '*')):
                     update_file = datetime.datetime.fromtimestamp(os.path.getmtime(file))
                     if update_file <= limitdate and pattern.match(os.path.basename(file)):
                         self.__logger.info("Removing file %s ...", file)
@@ -254,13 +264,14 @@ class DSLogger:
             if isinstance(handler, logging.FileHandler):
                 self.__files[handler.name] = self.__configuration.items.logging.handlers[handler.name].filename
 
-        interval = self.__configuration.items.get_property('logging.reload.interval', None)
+        interval = self.__configuration.items.get_property('logging.syncytium.reload.interval', None)
         if interval is not None:
             self.__reload_timer = DSLoggerTimer(self.reload, interval)
 
-        interval = self.__configuration.items.get_property('logging.cleanup.interval', None)
+        interval = self.__configuration.items.get_property('logging.syncytium.cleanup.interval', None)
         if interval is not None:
             self.__cleanup_timer = DSLoggerTimer(self.cleanup, interval)
+
         self.__class__.Instance = self
 
-        self.__setup_fastapi_logging()
+        self.__setup_logging()
