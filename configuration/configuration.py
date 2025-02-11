@@ -80,16 +80,6 @@ class DSConfiguration:
         Retrieve a value from a key, describing a path of a value into the configuration file
         if the key doesn't exist, the default value is retrieved
         """
-        if key == 'VERSION':
-            try:
-                return self.version
-            except:
-                return default_value
-        if key == 'APPLICATION':
-            try:
-                return self.application
-            except:
-                return default_value
         return self.__items.get_property(key, default_value)
 
     def __init__(self, filename):

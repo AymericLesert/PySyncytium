@@ -9,10 +9,17 @@ import json
 
 from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect
 
+from logger.logger import DSLogger
+from logger.loggerobject import asyncloggerexecutiontime
+
 from interface.authentication import decrypt_user_web
 from interface.db import get_db, schema
 
-app = FastAPI()
+# Handle the API routes
+
+app = FastAPI(title=DSLogger.Instance.application,
+              description="WebSocket Interface - Permanently connection between server and client application",
+              version=DSLogger.Instance.version)
 
 # ------------------
 # WebSocket method
@@ -60,6 +67,7 @@ async def websocket_service_table(websocket, user, table):
 active_connections = []
 
 @app.websocket("/ws")
+@asyncloggerexecutiontime
 async def websocket_endpoint(websocket: WebSocket, user: dict = Depends(decrypt_user_web)):
     """Gestion des connexions WebSocket sécurisées."""
     await websocket.accept()

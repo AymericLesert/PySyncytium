@@ -55,11 +55,13 @@ try:
         userToto.Name = "Toto"
         userToto.Age = 99
         userToto.PhoneNumber = "99.99.99.99.99"
+        print(userToto)
 
         userTata = schema.User.new()
         userTata.Name = "Tata"
         userTata.Age = 88
         userTata.PhoneNumber = "88.99.99.99.99"
+        print(userTata)
 
         db.begin_transaction()
         schema.User.delete([userToto, userTata])
@@ -85,6 +87,12 @@ try:
         for record in schema.User.select(lambda user: user.Name.in_('Aymeric', 'Marie')):
             print(record)
             print(record.Name)
+
+        for record in schema.User:
+            newrecord = record.clone()
+            newrecord.Name = record.Name + "*"
+            print('current', record)
+            print('new', newrecord)
 except:  # pylint: disable=bare-except
     traceback.print_exc()
 _ = input()

@@ -14,10 +14,17 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from logger.logger import DSLogger
+from logger.loggerobject import asyncloggerexecutiontime
+
 from interface.authentication import new_token, decrypt_user_web
 from interface.db import get_db, schema
 
-app = FastAPI()
+# Handle the API routes
+
+app = FastAPI(title=DSLogger.Instance.application,
+              description="Web Interface - Getting HTML pages",
+              version=DSLogger.Instance.version)
 
 # ---------------
 # Templates files
@@ -44,12 +51,14 @@ def get_protected_file(filename, user = Depends(decrypt_user_web)):
 # --------------
 
 @app.get("/login", response_class=HTMLResponse)
-def get_login(request: Request, redirect_to: str = Query("/protected")):
+@asyncloggerexecutiontime
+async def get_login(request: Request, redirect_to: str = Query("/protected")):
     """Access to the login page"""
     return templates.TemplateResponse("login.html", {"request": request, "redirect_to": redirect_to})
 
 @app.post("/login")
-def post_login(username: str = Form(...), password: str = Form(...), redirect_to: str = Form("/protected")):
+@asyncloggerexecutiontime
+async def post_login(username: str = Form(...), password: str = Form(...), redirect_to: str = Form("/protected")):
     """Commit the authentication of the user"""
     access_token = new_token(username, password)
     response = RedirectResponse(url=redirect_to, status_code=303)
@@ -61,7 +70,8 @@ def post_login(username: str = Form(...), password: str = Form(...), redirect_to
 # ---------
 
 @app.get("/", response_class=HTMLResponse)
-def get_home(request: Request, user = Depends(decrypt_user_web)):
+@asyncloggerexecutiontime
+async def get_home(request: Request, user = Depends(decrypt_user_web)):
     """Access to the home page"""
     if user is None:
         return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
@@ -73,7 +83,8 @@ def get_home(request: Request, user = Depends(decrypt_user_web)):
                                       })
 
 @app.get("/insert/{table}", response_class=HTMLResponse)
-def get_table_insert(table, request: Request, user = Depends(decrypt_user_web)):
+@asyncloggerexecutiontime
+async def get_table_insert(table, request: Request, user = Depends(decrypt_user_web)):
     """Access to the page creating a new record"""
     if user is None:
         return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
@@ -85,6 +96,7 @@ def get_table_insert(table, request: Request, user = Depends(decrypt_user_web)):
                                       })
 
 @app.post("/insert/{table}", response_class=HTMLResponse)
+@asyncloggerexecutiontime
 async def post_table_insert(table, request: Request, user = Depends(decrypt_user_web)):
     """Insert a new record to the database"""
     if user is None:
@@ -97,7 +109,8 @@ async def post_table_insert(table, request: Request, user = Depends(decrypt_user
     return RedirectResponse(url=f"/select/{table}", status_code=303)
 
 @app.get("/select/{table}", response_class=HTMLResponse)
-def get_table_select(table, request: Request, user = Depends(decrypt_user_web)):
+@asyncloggerexecutiontime
+async def get_table_select(table, request: Request, user = Depends(decrypt_user_web)):
     """Access to the page showing the list of records"""
     if user is None:
         return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
@@ -114,7 +127,8 @@ def get_table_select(table, request: Request, user = Depends(decrypt_user_web)):
                                       })
 
 @app.get("/update/{table}/{key}", response_class=HTMLResponse)
-def get_table_update(table, key, request: Request, user = Depends(decrypt_user_web)):
+@asyncloggerexecutiontime
+async def get_table_update(table, key, request: Request, user = Depends(decrypt_user_web)):
     """Access to the page updating an existing record"""
     if user is None:
         return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
@@ -132,6 +146,7 @@ def get_table_update(table, key, request: Request, user = Depends(decrypt_user_w
                                       })
 
 @app.post("/update/{table}/{key}", response_class=HTMLResponse)
+@asyncloggerexecutiontime
 async def post_table_update(table, key, request: Request, user = Depends(decrypt_user_web)):
     """Update an existing record to the database"""
     if user is None:
@@ -148,7 +163,8 @@ async def post_table_update(table, key, request: Request, user = Depends(decrypt
     return RedirectResponse(url=f"/select/{table}", status_code=303)
 
 @app.get("/delete/{table}/{key}", response_class=HTMLResponse)
-def get_table_delete(table, key, request: Request, user = Depends(decrypt_user_web)):
+@asyncloggerexecutiontime
+async def get_table_delete(table, key, request: Request, user = Depends(decrypt_user_web)):
     """Access to the page deleting an existing record"""
     if user is None:
         return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
@@ -166,6 +182,7 @@ def get_table_delete(table, key, request: Request, user = Depends(decrypt_user_w
                                       })
 
 @app.post("/delete/{table}/{key}", response_class=HTMLResponse)
+@asyncloggerexecutiontime
 async def post_table_delete(table, key, request: Request, user = Depends(decrypt_user_web)):
     """Delete an existing record to the database"""
     if user is None:
@@ -178,7 +195,8 @@ async def post_table_delete(table, key, request: Request, user = Depends(decrypt
     return RedirectResponse(url=f"/select/{table}", status_code=303)
 
 @app.get("/chat", response_class=HTMLResponse)
-def get_chat(request: Request, user = Depends(decrypt_user_web)):
+@asyncloggerexecutiontime
+async def get_chat(request: Request, user = Depends(decrypt_user_web)):
     """Access to the chat page"""
     if user is None:
         return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)

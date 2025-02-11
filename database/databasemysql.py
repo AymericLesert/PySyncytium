@@ -63,6 +63,10 @@ class DSDatabaseMySQL(DSDatabase):
         items = []
         if isinstance(values, list):
             for value in values:
+                print(value)
+                for name in dstable.fields:
+                    print("--", value[name])
+                print(tuple(value[name] for name in dstable.fields))
                 items.append(tuple(value[name] for name in dstable.fields))
                 keys.append(value[dstable.key])
         else:
@@ -112,10 +116,9 @@ class DSDatabaseMySQL(DSDatabase):
         keys = []
         if isinstance(values, list):
             for value in values:
-                keys.append(tuple([value[dstable.key]]))
+                keys.append((value[dstable.key],))
         else:
-            print(values)
-            keys.append(tuple([values[dstable.key]]))
+            keys.append((values[dstable.key],))
 
         count = len(keys)
         query = "DELETE FROM `" + dstable.schema.name + "`.`" + dstable.name + "` " + \
@@ -125,7 +128,7 @@ class DSDatabaseMySQL(DSDatabase):
             self.__transaction.execute(query, keys[0])
         elif count > 1:
             self.__transaction.executemany(query, keys)
-        return keys
+        return [ key[0] for key in keys ]
 
     def end_transaction(self):
         """Close the current transaction"""
