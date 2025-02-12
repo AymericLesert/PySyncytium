@@ -48,8 +48,8 @@
     <Compile Include="logger\logger.py" />
     <Compile Include="logger\__init__.py" />
     <Compile Include="syncytium.py" />
-    <Compile Include="main_config.py" />
-    <Compile Include="main_database.py" />
+    <Compile Include="test\configuration.py" />
+    <Compile Include="test\main_database.py" />
     <Compile Include="schema\criteria\criteriafactory.py" />
     <Compile Include="schema\record.py" />
     <Compile Include="schema\criteria\criterialogicalnot.py" />
@@ -76,6 +76,7 @@
     <Compile Include="schema\__init__.py" />
     <Compile Include="interface\api\api.py" />
     <Compile Include="interface\web\web.py" />
+    <Compile Include="test\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
@@ -98,6 +99,9 @@
     <Content Include="requirements.txt" />
     <Content Include=".env" />
     <Content Include="interface\web\template\index.html" />
+    <Content Include="test\config.yml" />
+    <Content Include="test\config\database.yml" />
+    <Content Include="test\config\logging.yml" />
     <Content Include="VERSION" />
     <Content Include="APPLICATION" />
   </ItemGroup>
@@ -123,12 +127,14 @@
     <Folder Include="logger\" />
     <Folder Include="configuration\" />
     <Folder Include="logs\" />
+    <Folder Include="test\" />
     <Folder Include="schema\" />
     <Folder Include="schema\criteria\" />
     <Folder Include="schema\field\" />
     <Folder Include="interface\web\script\" />
     <Folder Include="interface\web\public\" />
     <Folder Include="interface\web\template\" />
+    <Folder Include="test\config\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

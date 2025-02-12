@@ -5,7 +5,7 @@
 ```
 cd PySyncytium
 env\Script\activate
-python api.py
+python syncytium.py --name api
 or
 fastapi dev interface\api\api.py
 ```
@@ -15,7 +15,7 @@ fastapi dev interface\api\api.py
 ```
 cd PySyncytium
 env\Script\activate
-python web.py
+python syncytium.py --name web
 or
 uvicorn interface.web.web:app --reload --port 8080
 ```
@@ -25,7 +25,16 @@ uvicorn interface.web.web:app --reload --port 8080
 ```
 cd PySyncytium
 env\Script\activate
-python websocket.py
+python syncytium.py --name websocket
 or
 uvicorn interface.websocket.websocket:app --reload --port 8081
 ```
+
+## Démarrage des tests unitaires
+
+```
+cd PySyncytium
+env\Script\activate
+python -m test.configuration
+```
+

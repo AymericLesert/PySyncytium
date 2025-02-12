@@ -1,0 +1,40 @@
+version: 1
+verbose: True
+
+syncytium:
+    reload:
+        interval: 60
+
+    cleanup:
+        interval: 86400
+        directory: ${SYNCYTIUM_LOG_DIRECTORY}
+        pattern: "^${APPLICATION}-.*\\.log$"
+        nbdays: 20
+
+    loggers:
+        - fastapi
+        - uvicorn
+
+formatters:
+    standard:
+        format: "%(asctime)s [%(levelname)-5s] (%(process)d:%(processName)s) %(message)s"
+
+handlers:
+    console:
+        class: logging.StreamHandler
+        level: INFO
+        formatter: standard
+        stream: ext://sys.stdout
+
+    file:
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        formatter: standard
+        filename: ${SYNCYTIUM_LOG_DIRECTORY}/${APPLICATION}-${date:%Y-%m-%d}.log
+        maxBytes: 16777216 # 16Mb
+        backupCount: 10
+        encoding: utf8
+
+root:
+    level: NOTSET
+    handlers: [console, file]

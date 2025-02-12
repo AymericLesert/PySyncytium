@@ -168,7 +168,7 @@ class DSConfigurationItem:
                             item = item[int(itemkey[:-1])]
                         except:
                             return default_value
-        return item
+        return self.__evaluate(item)
 
     def __init__(self, root, item):
         def subitem(root, item):
