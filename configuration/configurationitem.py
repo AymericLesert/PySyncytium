@@ -138,7 +138,7 @@ class DSConfigurationItem:
     def __getattr__(self, name):
         if name in self.__items:
             return self.__evaluate(self.__items[name])
-        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+        raise KeyError(f"Field '{name}' not found in record.")
 
     def __getitem__(self, name):
         if name in self.__items:
@@ -168,7 +168,7 @@ class DSConfigurationItem:
                             item = item[int(itemkey[:-1])]
                         except:
                             return default_value
-        return item
+        return self.__evaluate(item)
 
     def __init__(self, root, item):
         def subitem(root, item):
