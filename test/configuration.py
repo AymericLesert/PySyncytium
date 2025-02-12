@@ -141,6 +141,8 @@ class TestDSConfiguration(unittest.TestCase):
         self.assertEqual(self.configuration.get_property("database.unknown", "#NA"), "#NA")
         self.assertEqual(self.configuration.application, "Syncytium")
         self.assertRegex(self.configuration.version, r"^v[0-9]+(\.[0-9]+)*$")
+        with self.assertRaises(KeyError):
+            self.configuration.items.database.unknown
 
 if __name__ == "__main__":
     load_dotenv()
