@@ -15,7 +15,7 @@ from logger.loggerobject import asyncloggerexecutiontime
 from interface.authentication import new_token, decrypt_user_api
 from interface.db import get_db, schema
 
-from schema.criteria.criteriafactory import factory as criteriafactory
+from app.schema.criteria.criteriafactory import factory as criteriafactory
 
 # Handle the API routes
 

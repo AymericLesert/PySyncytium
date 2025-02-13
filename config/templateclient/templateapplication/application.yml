@@ -1,0 +1,8 @@
+# Description of the current application
+
+name: "Template Application"
+description: "Application modéle du client"
+
+database: database.yml
+schema: schema.yml
+smtp: smtp.yml

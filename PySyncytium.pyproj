@@ -25,16 +25,17 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="app\service\__init__.py" />
     <Compile Include="configuration\configuration.py" />
     <Compile Include="configuration\configurationitem.py" />
     <Compile Include="configuration\__init__.py" />
     <Compile Include="config\logging.yml" />
     <Compile Include="interface\authentication.py" />
     <Compile Include="interface\api\__init__.py" />
-    <Compile Include="database\cursor.py" />
-    <Compile Include="database\databasemysql.py" />
-    <Compile Include="database\database.py" />
-    <Compile Include="database\__init__.py" />
+    <Compile Include="app\schema\database\cursor.py" />
+    <Compile Include="app\schema\database\databasemysql.py" />
+    <Compile Include="app\schema\database\database.py" />
+    <Compile Include="app\schema\database\__init__.py" />
     <Compile Include="interface\websocket\websocket.py" />
     <Compile Include="interface\db.py" />
     <Compile Include="interface\__init__.py" />
@@ -50,30 +51,30 @@
     <Compile Include="syncytium.py" />
     <Compile Include="test\configuration.py" />
     <Compile Include="test\main_database.py" />
-    <Compile Include="schema\criteria\criteriafactory.py" />
-    <Compile Include="schema\record.py" />
-    <Compile Include="schema\criteria\criterialogicalnot.py" />
-    <Compile Include="schema\criteria\criterialogicalor.py" />
-    <Compile Include="schema\criteria\criterialogicaland.py" />
-    <Compile Include="schema\criteria\criterialogical.py" />
-    <Compile Include="schema\criteria\criteriacomparablein.py" />
-    <Compile Include="schema\criteria\criteriacomparablelike.py" />
-    <Compile Include="schema\criteria\criteriacomparablegreaterorequal.py" />
-    <Compile Include="schema\criteria\criteriacomparablegreater.py" />
-    <Compile Include="schema\criteria\criteriacomparablenotequal.py" />
-    <Compile Include="schema\criteria\criteriacomparableless.py" />
-    <Compile Include="schema\criteria\criteriacomparablelessorequal.py" />
-    <Compile Include="schema\criteria\criteriacomparableequal.py" />
-    <Compile Include="schema\criteria\criteriacomparable.py" />
-    <Compile Include="schema\criteria\criteria.py" />
-    <Compile Include="schema\criteria\__init__.py" />
-    <Compile Include="schema\field\field.py" />
-    <Compile Include="schema\field\fieldinteger.py" />
-    <Compile Include="schema\field\fieldstring.py" />
-    <Compile Include="schema\field\__init__.py" />
-    <Compile Include="schema\schema.py" />
-    <Compile Include="schema\table.py" />
-    <Compile Include="schema\__init__.py" />
+    <Compile Include="app\schema\criteria\criteriafactory.py" />
+    <Compile Include="app\schema\record.py" />
+    <Compile Include="app\schema\criteria\criterialogicalnot.py" />
+    <Compile Include="app\schema\criteria\criterialogicalor.py" />
+    <Compile Include="app\schema\criteria\criterialogicaland.py" />
+    <Compile Include="app\schema\criteria\criterialogical.py" />
+    <Compile Include="app\schema\criteria\criteriacomparablein.py" />
+    <Compile Include="app\schema\criteria\criteriacomparablelike.py" />
+    <Compile Include="app\schema\criteria\criteriacomparablegreaterorequal.py" />
+    <Compile Include="app\schema\criteria\criteriacomparablegreater.py" />
+    <Compile Include="app\schema\criteria\criteriacomparablenotequal.py" />
+    <Compile Include="app\schema\criteria\criteriacomparableless.py" />
+    <Compile Include="app\schema\criteria\criteriacomparablelessorequal.py" />
+    <Compile Include="app\schema\criteria\criteriacomparableequal.py" />
+    <Compile Include="app\schema\criteria\criteriacomparable.py" />
+    <Compile Include="app\schema\criteria\criteria.py" />
+    <Compile Include="app\schema\criteria\__init__.py" />
+    <Compile Include="app\schema\field\field.py" />
+    <Compile Include="app\schema\field\fieldinteger.py" />
+    <Compile Include="app\schema\field\fieldstring.py" />
+    <Compile Include="app\schema\field\__init__.py" />
+    <Compile Include="app\schema\schema.py" />
+    <Compile Include="app\schema\table.py" />
+    <Compile Include="app\schema\__init__.py" />
     <Compile Include="interface\api\api.py" />
     <Compile Include="interface\web\web.py" />
     <Compile Include="test\__init__.py" />
@@ -81,11 +82,20 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include=".pylintrc" />
+    <Content Include="config\root\smtp.yml" />
+    <Content Include="config\templateclient\templateapplication\smtp.yml" />
+    <Content Include="config\templateclient\templateclient.yml" />
+    <Content Include="config\templateclient\templateapplication\application.yml" />
+    <Content Include="config\templateclient\templateapplication\database.yml" />
+    <Content Include="config\templateclient\templateapplication\schema.yml" />
+    <Content Include="config\root.yml" />
+    <Content Include="config\clients.yml" />
     <Content Include="config\interface\websocket.yml" />
     <Content Include="config\interface\web.yml" />
     <Content Include="config\interface\api.yml" />
-    <Content Include="config\database.yml" />
     <Content Include="config\interface.yml" />
+    <Content Include="config\root\database.yml" />
+    <Content Include="config\root\schema.yml" />
     <Content Include="interface\web\script\chat.js" />
     <Content Include="interface\web\template\chat.html" />
     <Content Include="interface\web\template\update.html" />
@@ -117,8 +127,13 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="app\service\" />
+    <Folder Include="config\templateclient\" />
+    <Folder Include="config\templateclient\templateapplication\" />
     <Folder Include="config\interface\" />
-    <Folder Include="database\" />
+    <Folder Include="config\root\" />
+    <Folder Include="app\" />
+    <Folder Include="app\schema\database\" />
     <Folder Include="interface\api\" />
     <Folder Include="interface\" />
     <Folder Include="interface\websocket\" />
@@ -128,9 +143,9 @@
     <Folder Include="configuration\" />
     <Folder Include="logs\" />
     <Folder Include="test\" />
-    <Folder Include="schema\" />
-    <Folder Include="schema\criteria\" />
-    <Folder Include="schema\field\" />
+    <Folder Include="app\schema\" />
+    <Folder Include="app\schema\criteria\" />
+    <Folder Include="app\schema\field\" />
     <Folder Include="interface\web\script\" />
     <Folder Include="interface\web\public\" />
     <Folder Include="interface\web\template\" />

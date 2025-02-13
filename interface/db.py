@@ -12,8 +12,8 @@ import traceback
 import os
 from dotenv import load_dotenv
 
-from schema.schema import DSSchema
-from database.databasemysql import DSDatabaseMySQL
+from app.schema.schema import DSSchema
+from app.schema.database.databasemysql import DSDatabaseMySQL
 
 load_dotenv()
 

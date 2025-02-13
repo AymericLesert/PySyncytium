@@ -1,3 +1,6 @@
+# Root configuration item of the application
+
 logging: config/logging.yml
-database: config/database.yml
 interface: config/interface.yml
+root: config/root.yml
+clients: config/clients.yml

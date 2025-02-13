@@ -1,0 +1,9 @@
+# Main database connection
+
+class: DSDatabaseMySQL
+
+parameters:
+  hostname: "localhost"
+  username: "${ROOT_DATABASE_USERNAME}"
+  password*: ${ROOT_DATABASE_PASSWORD}
+  schema: "Syncytium"

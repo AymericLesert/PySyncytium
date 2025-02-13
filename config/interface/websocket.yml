@@ -1,2 +1,4 @@
+# Configuration of the websocket of the clients
+
 hostname: 127.0.0.1
 port: 8081
