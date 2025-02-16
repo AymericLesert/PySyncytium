@@ -31,6 +31,7 @@ class DSLoggerObject:
 
     @property
     def user(self):
+        """Retrieve the user to show in the log file"""
         return self.__user
 
     def set_user(self, user):

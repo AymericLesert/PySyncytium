@@ -24,7 +24,7 @@ class DSDatabase(DSLoggerObject):
         """Retrieve a JSON description of the tables from a given schema"""
         return {}
 
-    def insert(self, table_name, fields, values):
+    def insert(self, tablename, fields, values):
         """Return the list of values inserted into a table"""
         return None
 
@@ -32,11 +32,11 @@ class DSDatabase(DSLoggerObject):
         """Return a cursor to the selection of the dstable"""
         return None
 
-    def update(self, tablename, fields, oldvalue, newvalue):
+    def update(self, tablename, fields, oldvalues, newvalues):
         """Return the new value"""
         return None
 
-    def delete(self, table_name, fields, values):
+    def delete(self, tablename, fields, values):
         """Return the list of values removed"""
         return None
 
@@ -57,6 +57,3 @@ class DSDatabase(DSLoggerObject):
 
     def __exit__(self, *args):
         self.disconnect()
-
-    def __init__(self):
-        super().__init__()

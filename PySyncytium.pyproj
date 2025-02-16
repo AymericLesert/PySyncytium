@@ -116,9 +116,12 @@
     <Content Include="requirements.txt" />
     <Content Include=".env" />
     <Content Include="interface\web\template\index.html" />
-    <Content Include="test\config.yml" />
-    <Content Include="test\config\database.yml" />
-    <Content Include="test\config\logging.yml" />
+    <Content Include="test\database\database.yml" />
+    <Content Include="test\database\logging.yml" />
+    <Content Include="test\database.yml" />
+    <Content Include="test\configuration.yml" />
+    <Content Include="test\configuration\database.yml" />
+    <Content Include="test\configuration\logging.yml" />
     <Content Include="VERSION" />
     <Content Include="APPLICATION" />
   </ItemGroup>
@@ -157,7 +160,8 @@
     <Folder Include="interface\web\script\" />
     <Folder Include="interface\web\public\" />
     <Folder Include="interface\web\template\" />
-    <Folder Include="test\config\" />
+    <Folder Include="test\database\" />
+    <Folder Include="test\configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

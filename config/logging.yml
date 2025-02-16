@@ -4,11 +4,11 @@ version: 1
 verbose: True
 
 syncytium:
-    reload-disable:
+    reload:
         # time laps between 2 checks of evolution configuration (if {date} appears into an item)
         interval: 60
 
-    cleanup-disable:
+    cleanup:
         # time laps between 2 checks of cleaning up log directory (remove older file)
         interval: 86400
         directory: ${SYNCYTIUM_LOG_DIRECTORY}

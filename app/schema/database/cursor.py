@@ -11,7 +11,7 @@ class DSCursor(DSLoggerObject):
 
     def close(self):
         """Close and release the cursor"""
-        self.info(f"Gotten {self._nbrecords} records from {self.__tablename}")
+        self.info(f"{self._nbrecords} records selected from {self.__tablename}")
         self.__cursor.close()
         self.__cursor = None
 
@@ -20,7 +20,11 @@ class DSCursor(DSLoggerObject):
         return self
 
     def __next__(self):
-        record = next(self.__iterator)
+        try:
+            record = next(self.__iterator)
+        except StopIteration:
+            self.close()
+            raise
         for i, name in enumerate(self.__fields):
             self.__record[name] = record[i]
         self._nbrecords += 1

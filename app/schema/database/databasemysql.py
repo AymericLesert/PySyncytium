@@ -26,7 +26,7 @@ class DSDatabaseMySQL(DSDatabase):
             self.__database.start_transaction()
             self.__transaction = self.__database.cursor()
             self.info(f"Database '{self.__host}' with user '{self.__username}' connected")
-        except Exception:
+        except:
             self.exception(f"Error on connection to the database '{self.__host}' with user '{self.__username}'")
             self.disconnect()
         return self
@@ -52,7 +52,6 @@ class DSDatabaseMySQL(DSDatabase):
         if self.isverbose:
             self.verbose(f"USE `{self.__schema}`")
         self.__transaction.execute(f"USE `{self.__schema}`")
-        
         if self.isverbose:
             self.verbose("SHOW TABLES")
         self.__transaction.execute("SHOW TABLES")
@@ -75,9 +74,8 @@ class DSDatabaseMySQL(DSDatabase):
                     structuretable['Key'] = fieldname
                 structuretable['Fields'][fieldname] = structurefield
             structure['Tables'][tablename] = structuretable
-        
         self.info(f"The schema '{self.__schema}' is retrieved")
-        
+
         if self.isverbose:
             self.verbose(json.dumps(structure, sort_keys=True, indent=2))
 
@@ -95,25 +93,33 @@ class DSDatabaseMySQL(DSDatabase):
             raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
 
         items = []
-        if isinstance(values, (list, tuple)):
-            for value in values:
-                items.append(tuple(value[name] for name in fields))
-        else:
-            items.append(tuple(values[name] for name in fields))
+        try:
+            if isinstance(values, (list, tuple)):
+                for value in values:
+                    items.append(tuple(value[name] for name in fields))
+            else:
+                items.append(tuple(values[name] for name in fields))
+        except Exception as exc:
+            self.exception(f"Error on extracting data from '{query}'")
+            raise DSExceptionDatabaseRequest(f"Error on extracting data from '{query}'") from exc
 
         count = len(items)
         self.verbose(f"Inserting {count} lines ...")
+        if self.isverbose:
+            for item in items:
+                self.verbose(str(item))
         try:
             if count == 1:
                 self.__transaction.execute(query, items[0])
-                self.info(f"1 row inserted into '{tablename}'")
+                self.info(f"{self.__transaction.rowcount} row inserted into '{tablename}'")
             elif count > 1:
                 self.__transaction.executemany(query, items)
-                self.info(f"{count} rows inserted into '{tablename}'")
+                self.info(f"{self.__transaction.rowcount} rows inserted into '{tablename}'")
             else:
                 self.info(f"No data inserted into '{tablename}'")
-        except:
-            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'")
+        except Exception as exc:
+            self.exception(f"Error on executing the request '{query}'")
+            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'") from exc
 
         return values
 
@@ -123,7 +129,10 @@ class DSDatabaseMySQL(DSDatabase):
         query = "SELECT " + ", ".join(["`" + name + "`" for name in fields]) + " " + \
                 "FROM `" + self.__schema + "`.`" + tablename + "`"
         if clause is not None:
-            query += " WHERE " + clause
+            if isinstance(clause, str):
+                query += " WHERE " + clause
+            else:
+                query += " WHERE " + clause.tomysql()
 
         self.debug(f"Executing '{query}' ...")
 
@@ -136,10 +145,11 @@ class DSDatabaseMySQL(DSDatabase):
 
             self.info(f"Selecting data from '{tablename}' where '{query}') ...")
             return DSCursor(cursor, tablename, fields).set_user(self.user)
-        except:
-            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'")
+        except Exception as exc:
+            self.exception(f"Error on executing the request '{query}'")
+            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'") from exc
 
-    def update(self, tablename, fields, oldvalue, newvalue):
+    def update(self, tablename, fields, oldvalues, newvalues):
         """Return the new value"""
 
         query = "UPDATE `" + self.__schema + "`.`" + tablename + "` " + \
@@ -151,22 +161,50 @@ class DSDatabaseMySQL(DSDatabase):
         if not self.isconnected:
             raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
 
-        if oldvalue == newvalue:
-            return newvalue
-
-        values = []
-        for field in fields:
-            values.append(newvalue[field])
-        for field in fields:
-            values.append(oldvalue[field])
-
+        items = []
+        count = 0
         try:
-            self.__transaction.execute(query, tuple(values))
-            self.info(f"{self.__transaction.mysql_affected_rows()} rows updated into '{tablename}'")
-        except:
-            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'")
+            if isinstance(oldvalues, (list, tuple)):
+                for oldvalue, newvalue in zip(oldvalues, newvalues):
+                    if oldvalue == newvalue:
+                        continue
+                    subitems = []
+                    for field in fields:
+                        subitems.append(newvalue[field])
+                    for field in fields:
+                        subitems.append(oldvalue[field])
+                    items.append(tuple(subitems))
+                    count += 1
+            elif oldvalues != newvalues:
+                subitems = []
+                for field in fields:
+                    subitems.append(newvalues[field])
+                for field in fields:
+                    subitems.append(oldvalues[field])
+                items.append(tuple(subitems))
+                count += 1
+        except Exception as exc:
+            self.exception(f"Error on extracting data from '{query}'")
+            raise DSExceptionDatabaseRequest(f"Error on extracting data from '{query}'") from exc
 
-        return newvalue
+        self.verbose(f"Updating {count} lines ...")
+        if self.isverbose:
+            for item in items:
+                self.verbose(str(item))
+        try:
+            if count == 1:
+                self.__transaction.execute(query, items[0])
+                self.info(f"{self.__transaction.rowcount} row updated into '{tablename}'")
+            elif count > 1:
+                self.__transaction.executemany(query, items)
+                self.info(f"{self.__transaction.rowcount} rows updated into '{tablename}'")
+            else:
+                self.info(f"No data updated into '{tablename}'")
+        except Exception as exc:
+            self.exception(f"Error on executing the request '{query}'")
+            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'") from exc
+
+        return newvalues
 
     def delete(self, tablename, fields, values):
         """Return the list of values removed"""
@@ -180,25 +218,33 @@ class DSDatabaseMySQL(DSDatabase):
             raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
 
         items = []
-        if isinstance(values, (list, tuple)):
-            for value in values:
-                items.append(tuple(value[name] for name in fields))
-        else:
-            items.append(tuple(values[name] for name in fields))
+        try:
+            if isinstance(values, (list, tuple)):
+                for value in values:
+                    items.append(tuple(value[name] for name in fields))
+            else:
+                items.append(tuple(values[name] for name in fields))
+        except Exception as exc:
+            self.exception(f"Error on extracting data from '{query}'")
+            raise DSExceptionDatabaseRequest(f"Error on extracting data from '{query}'") from exc
 
         count = len(items)
-        self.verbose(f"Removing {count} lines ...")
+        self.verbose(f"Deleting {count} lines ...")
+        if self.isverbose:
+            for item in items:
+                self.verbose(str(item))
         try:
             if count == 1:
                 self.__transaction.execute(query, items[0])
-                self.info(f"{self.__transaction.mysql_affected_rows()} row removed into '{tablename}'")
+                self.info(f"{self.__transaction.rowcount} row deleted into '{tablename}'")
             elif count > 1:
                 self.__transaction.executemany(query, items)
-                self.info(f"{self.__transaction.mysql_affected_rows()} rows removed into '{tablename}'")
+                self.info(f"{self.__transaction.rowcount} rows deleted into '{tablename}'")
             else:
-                self.info(f"No data removed into '{tablename}'")
-        except:
-            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'")
+                self.info(f"No data deleted into '{tablename}'")
+        except Exception as exc:
+            self.exception(f"Error on executing the request '{query}'")
+            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'") from exc
 
         return values
 
@@ -210,7 +256,7 @@ class DSDatabaseMySQL(DSDatabase):
             raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
 
         try:
-            self.__database.rollback()
+            self.__database.commit()
             self.info("Commit done")
             self.__database.start_transaction()
         except:

@@ -15,7 +15,7 @@ class TestDSConfiguration(unittest.TestCase):
 
     def setUp(self):
         """Initialization of the configuration items"""
-        self.configuration = DSConfiguration('test/config.yml')
+        self.configuration = DSConfiguration('test/configuration.yml')
 
     def test_json(self):
         """Checks if the dictionaries are expected (from the file and from the interpretation)"""
