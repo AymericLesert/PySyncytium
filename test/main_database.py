@@ -49,7 +49,7 @@ try:
         print("connected", db.is_connected)
         schema.database = db
 
-        print(json.dumps(db.get_description("Syncytium"), sort_keys=False, indent=2))
+        print(json.dumps(db.get_schema("Syncytium"), sort_keys=False, indent=2))
 
         userToto = schema.User.new()
         userToto.Name = "Toto"

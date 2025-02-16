@@ -26,10 +26,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app\service\__init__.py" />
+    <Compile Include="app\__init__.py" />
     <Compile Include="configuration\configuration.py" />
     <Compile Include="configuration\configurationitem.py" />
     <Compile Include="configuration\__init__.py" />
     <Compile Include="config\logging.yml" />
+    <Compile Include="exception\exceptiondatabase.py" />
+    <Compile Include="exception\exceptiondatabaserequest.py" />
+    <Compile Include="exception\exceptiondatabasenotconnected.py" />
+    <Compile Include="exception\exception.py" />
+    <Compile Include="exception\__init__.py" />
     <Compile Include="interface\authentication.py" />
     <Compile Include="interface\api\__init__.py" />
     <Compile Include="app\schema\database\cursor.py" />
@@ -50,6 +56,7 @@
     <Compile Include="logger\__init__.py" />
     <Compile Include="syncytium.py" />
     <Compile Include="test\configuration.py" />
+    <Compile Include="test\databasemysql.py" />
     <Compile Include="test\main_database.py" />
     <Compile Include="app\schema\criteria\criteriafactory.py" />
     <Compile Include="app\schema\record.py" />
@@ -142,6 +149,7 @@
     <Folder Include="logger\" />
     <Folder Include="configuration\" />
     <Folder Include="logs\" />
+    <Folder Include="exception\" />
     <Folder Include="test\" />
     <Folder Include="app\schema\" />
     <Folder Include="app\schema\criteria\" />

@@ -38,14 +38,12 @@ class DSSchema:
         return list(self.__tables.keys())
 
     @property
-    def database(self):
-        """Retrieve the instance of the database connection"""
-        return self.__db
-
-    @database.setter
-    def database(self, value):
-        """Set the instance of the current database connection"""
-        self.__db = value
+    def session(self):
+        """
+        Retrieves a session on the database
+        CRUD on this session ...
+        """
+        return None
 
     def __getattr__(self, name):
         return self.__tables[name]
@@ -53,11 +51,11 @@ class DSSchema:
     def __getitem__(self, name):
         return self.__tables[name]
 
-    def __init__(self, schema):
+    def __init__(self, database, schema):
         self.__name = schema['Name']
         self.__description = schema.get('Description', '')
         self.__tables = {}
-        self.__db = None
+        self.__database = database
 
         tables = schema.get('Tables', {})
         for key in tables:

@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=bare-except
 
 """
 This module handles the database connexion for MySQL instance.
 """
 
+import json
+
 import mysql.connector
+
+from exception.exceptiondatabasenotconnected import DSExceptionDatabaseNotConnected
+from exception.exceptiondatabaserequest import DSExceptionDatabaseRequest
 
 from .database import DSDatabase
 from .cursor import DSCursor
@@ -14,24 +20,50 @@ class DSDatabaseMySQL(DSDatabase):
 
     def connect(self):
         """This method describes the connection to MySQL"""
-        self.__database = mysql.connector.connect(host=self.__host, user=self.__username, password=self.__password)
+        self.debug(f"Connecting to the database '{self.__host}' with user '{self.__username}' ...")
+        try:
+            self.__database = mysql.connector.connect(host=self.__host, user=self.__username, password=self.__password)
+            self.__database.start_transaction()
+            self.__transaction = self.__database.cursor()
+            self.info(f"Database '{self.__host}' with user '{self.__username}' connected")
+        except Exception:
+            self.exception(f"Error on connection to the database '{self.__host}' with user '{self.__username}'")
+            self.disconnect()
         return self
 
     @property
-    def is_connected(self):
+    def isconnected(self):
         """Return if the connection is done"""
-        return self.__database is not None and self.__database.is_connected()
+        try:
+            return self.__database is not None and self.__database.is_connected()
+        except:
+            return False
 
-    def get_description(self, schema):
+    @property
+    def schema(self):
         """Retrieve a JSON description of the tables from a given schema"""
-        structure = { 'Name': schema, 'Tables' : {} }
-        self.begin_transaction()
-        self.__transaction = self.__database.cursor()
-        self.__transaction.execute(f"USE `{schema}`")
+        self.debug(f"Retrieveing the schema '{self.__schema}' ...")
+
+        if not self.isconnected:
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+
+        structure = { 'Name': self.__schema, 'Tables' : {} }
+
+        if self.isverbose:
+            self.verbose(f"USE `{self.__schema}`")
+        self.__transaction.execute(f"USE `{self.__schema}`")
+        
+        if self.isverbose:
+            self.verbose("SHOW TABLES")
         self.__transaction.execute("SHOW TABLES")
+
         for (tablename,) in self.__transaction.fetchall():
             structuretable = { 'Name': tablename, 'Fields': {} }
+
+            if self.isverbose:
+                self.verbose(f"DESCRIBE `{tablename}`")
             self.__transaction.execute(f"DESCRIBE `{tablename}`")
+
             for fieldname, fieldtype, nullable, primarykey, defaultvalue, _ in self.__transaction.fetchall():
                 structurefield = {
                     'Name': fieldname, 
@@ -43,119 +75,187 @@ class DSDatabaseMySQL(DSDatabase):
                     structuretable['Key'] = fieldname
                 structuretable['Fields'][fieldname] = structurefield
             structure['Tables'][tablename] = structuretable
-        self.__database.rollback()
+        
+        self.info(f"The schema '{self.__schema}' is retrieved")
+        
+        if self.isverbose:
+            self.verbose(json.dumps(structure, sort_keys=True, indent=2))
+
         return structure
 
-    def begin_transaction(self):
-        """Start a new transaction"""
-        print("begin_transaction")
-        if self.__transaction is not None:
-            return
-        self.__database.start_transaction()
-        self.__transaction = self.__database.cursor()
+    def insert(self, tablename, fields, values):
+        """Return the list of values inserted into a table"""
+        query = "INSERT INTO `" + self.__schema + "`.`" + tablename + "`" + \
+                "(" + ", ".join(["`" + name + "`" for name in fields]) + ") " + \
+                "VALUES(" + ", ".join(["%s" for _ in fields]) + ")"
 
-    def insert(self, dstable, values):
-        """Return the list of keys created while inserting the list of values"""
-        query = "INSERT INTO `" + dstable.schema.name + "`.`" + dstable.name + "`" + \
-                "(" + ", ".join(["`" + name + "`" for name in dstable.fields]) + ") " + \
-                "VALUES(" + ", ".join(["%s" for _ in dstable.fields]) + ")"
-        keys = []
+        self.debug(f"Executing '{query}' ...")
+
+        if not self.isconnected:
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+
         items = []
-        if isinstance(values, list):
+        if isinstance(values, (list, tuple)):
             for value in values:
-                print(value)
-                for name in dstable.fields:
-                    print("--", value[name])
-                print(tuple(value[name] for name in dstable.fields))
-                items.append(tuple(value[name] for name in dstable.fields))
-                keys.append(value[dstable.key])
+                items.append(tuple(value[name] for name in fields))
         else:
-            items.append(tuple(values[name] for name in dstable.fields))
-            keys.append(values[dstable.key])
+            items.append(tuple(values[name] for name in fields))
+
         count = len(items)
-        print(query, items)
-        if count == 1:
-            self.__transaction.execute(query, items[0])
-        elif count > 1:
-            self.__transaction.executemany(query, items)
-        return keys
+        self.verbose(f"Inserting {count} lines ...")
+        try:
+            if count == 1:
+                self.__transaction.execute(query, items[0])
+                self.info(f"1 row inserted into '{tablename}'")
+            elif count > 1:
+                self.__transaction.executemany(query, items)
+                self.info(f"{count} rows inserted into '{tablename}'")
+            else:
+                self.info(f"No data inserted into '{tablename}'")
+        except:
+            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'")
 
-    def select(self, dstable, clause = None):
+        return values
+
+    def select(self, tablename, fields, clause = None):
         """Return a cursor to the selection of the dstable"""
-        cursor = self.__database.cursor()
-        query = "SELECT " + ", ".join(["`" + name + "`" for name in dstable.fields]) + " " + \
-                "FROM `" + dstable.schema.name + "`.`" + dstable.name + "`"
+
+        query = "SELECT " + ", ".join(["`" + name + "`" for name in fields]) + " " + \
+                "FROM `" + self.__schema + "`.`" + tablename + "`"
         if clause is not None:
-            query += " WHERE " + clause.tomysql()
-        print(query)
-        cursor.execute(query)
-        return DSCursor(cursor, dstable)
+            query += " WHERE " + clause
 
-    def update(self, dstable, oldvalue, newvalue):
-        """Return the key updated"""
-        if oldvalue[dstable.key] != newvalue[dstable.key]:
-            return None
-        if oldvalue == newvalue:
-            return [newvalue[dstable.key]]
-        fields = []
-        values = []
-        for field in dstable.fields:
-            if oldvalue[field] != newvalue[field]:
-                fields.append(field)
-                values.append(newvalue[field])
-        values.append(newvalue[dstable.key])
-        query = "UPDATE `" + dstable.schema.name + "`.`" + dstable.name + "` " + \
+        self.debug(f"Executing '{query}' ...")
+
+        if not self.isconnected:
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+
+        try:
+            cursor = self.__database.cursor()
+            cursor.execute(query)
+
+            self.info(f"Selecting data from '{tablename}' where '{query}') ...")
+            return DSCursor(cursor, tablename, fields).set_user(self.user)
+        except:
+            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'")
+
+    def update(self, tablename, fields, oldvalue, newvalue):
+        """Return the new value"""
+
+        query = "UPDATE `" + self.__schema + "`.`" + tablename + "` " + \
                 "SET " + ", ".join(["`" + field + "` = %s " for field in fields]) + \
-                "WHERE `" + dstable.key + "` = %s" 
-        print(query, values)
-        self.__transaction.execute(query, tuple(values))
-        return [newvalue[dstable.key]]
+                "WHERE " + "and ".join(["`" + field + "` = %s " for field in fields]) 
 
-    def delete(self, dstable, values):
-        """Return the list of keys removed"""
-        keys = []
-        if isinstance(values, list):
+        self.debug(f"Executing '{query}' ...")
+
+        if not self.isconnected:
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+
+        if oldvalue == newvalue:
+            return newvalue
+
+        values = []
+        for field in fields:
+            values.append(newvalue[field])
+        for field in fields:
+            values.append(oldvalue[field])
+
+        try:
+            self.__transaction.execute(query, tuple(values))
+            self.info(f"{self.__transaction.mysql_affected_rows()} rows updated into '{tablename}'")
+        except:
+            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'")
+
+        return newvalue
+
+    def delete(self, tablename, fields, values):
+        """Return the list of values removed"""
+
+        query = "DELETE FROM `" + self.__schema + "`.`" + tablename + "` " + \
+                "WHERE " + "and ".join(["`" + field + "` = %s " for field in fields]) 
+
+        self.debug(f"Executing '{query}' ...")
+
+        if not self.isconnected:
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+
+        items = []
+        if isinstance(values, (list, tuple)):
             for value in values:
-                keys.append((value[dstable.key],))
+                items.append(tuple(value[name] for name in fields))
         else:
-            keys.append((values[dstable.key],))
+            items.append(tuple(values[name] for name in fields))
 
-        count = len(keys)
-        query = "DELETE FROM `" + dstable.schema.name + "`.`" + dstable.name + "` " + \
-                "WHERE `" + dstable.key + "` = %s" 
-        print(query, keys)
-        if count == 1:
-            self.__transaction.execute(query, keys[0])
-        elif count > 1:
-            self.__transaction.executemany(query, keys)
-        return [ key[0] for key in keys ]
+        count = len(items)
+        self.verbose(f"Removing {count} lines ...")
+        try:
+            if count == 1:
+                self.__transaction.execute(query, items[0])
+                self.info(f"{self.__transaction.mysql_affected_rows()} row removed into '{tablename}'")
+            elif count > 1:
+                self.__transaction.executemany(query, items)
+                self.info(f"{self.__transaction.mysql_affected_rows()} rows removed into '{tablename}'")
+            else:
+                self.info(f"No data removed into '{tablename}'")
+        except:
+            raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'")
 
-    def end_transaction(self):
-        """Close the current transaction"""
-        print("end_transaction")
-        if self.__transaction is not None:
-            self.__transaction.close()
-        self.__transaction = None
+        return values
 
     def commit(self):
         """Commit the current transaction"""
-        self.__database.commit()
-        self.end_transaction()
+        self.debug("Committing ...")
+
+        if not self.isconnected:
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+
+        try:
+            self.__database.rollback()
+            self.info("Commit done")
+            self.__database.start_transaction()
+        except:
+            self.exception("Error on committing")
 
     def rollback(self):
         """Rollback the current transaction"""
-        self.__database.rollback()
-        self.end_transaction()
+        self.debug("Rollbacking ...")
+
+        if not self.isconnected:
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+
+        try:
+            self.__database.rollback()
+            self.info("Rollback done")
+            self.__database.start_transaction()
+        except:
+            self.exception("Error on rollbacking")
 
     def disconnect(self):
         """This method describes the disconnection to MySQL"""
-        self.__database.close()
-        self.__database = None
+        self.debug(f"Disconnecting to the database '{self.__host}' with user '{self.__username}' ...")
+
+        if self.__transaction is not None:
+            try:
+                self.__transaction.close()
+            except:
+                self.exception("Error on closing the transaction")
+            self.__transaction = None
+
+        if self.__database is not None:
+            try:
+                self.__database.close()
+            except:
+                self.exception("Error on disconnecting the database")
+            self.__database = None
+
+        self.info(f"Database '{self.__host}' with user '{self.__username}' disconnected")
         return self
 
-    def __init__(self, host, username, password):
+    def __init__(self, host, username, password, schema):
+        super().__init__()
         self.__host = host
         self.__username = username
         self.__password = password
+        self.__schema = schema
         self.__database = None
         self.__transaction = None

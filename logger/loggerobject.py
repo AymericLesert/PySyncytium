@@ -29,40 +29,52 @@ class DSLoggerObject:
             return DSLogger.Instance.isdebug
         return False
 
-    def verbose(self, message, user = os.getlogin()):
+    @property
+    def user(self):
+        return self.__user
+
+    def set_user(self, user):
+        """Set the current user name (to trace information into the log file)"""
+        self.__user = user
+        return self
+
+    def verbose(self, message):
         """This function traces a verbose message into the log file"""
         if DSLogger.Instance:
-            DSLogger.Instance.verbose(user, self.__class__.__name__, __name__, message)
+            DSLogger.Instance.verbose(self.__user, self.__class__.__name__, __name__, message)
 
-    def debug(self, message, user = os.getlogin()):
+    def debug(self, message):
         """This function traces a debug message into the log file"""
         if DSLogger.Instance:
-            DSLogger.Instance.debug(user, self.__class__.__name__, __name__, message)
+            DSLogger.Instance.debug(self.__user, self.__class__.__name__, __name__, message)
 
-    def info(self, message, user = os.getlogin()):
+    def info(self, message):
         """This function traces an info message into the log file"""
         if DSLogger.Instance:
-            DSLogger.Instance.info(user, self.__class__.__name__, __name__, message)
+            DSLogger.Instance.info(self.__user, self.__class__.__name__, __name__, message)
 
-    def warning(self, message, user = os.getlogin()):
+    def warning(self, message):
         """This function traces a warning message into the log file"""
         if DSLogger.Instance:
-            DSLogger.Instance.warning(user, self.__class__.__name__, __name__, message)
+            DSLogger.Instance.warning(self.__user, self.__class__.__name__, __name__, message)
 
-    def error(self, message, user = os.getlogin()):
+    def error(self, message):
         """This function traces an error message into the log file"""
         if DSLogger.Instance:
-            DSLogger.Instance.error(user, self.__class__.__name__, __name__, message)
+            DSLogger.Instance.error(self.__user, self.__class__.__name__, __name__, message)
 
-    def critical(self, message, user = os.getlogin()):
+    def critical(self, message):
         """This function traces a critical message into the log file"""
         if DSLogger.Instance:
-            DSLogger.Instance.critical(user, self.__class__.__name__, __name__, message)
+            DSLogger.Instance.critical(self.__user, self.__class__.__name__, __name__, message)
 
-    def exception(self, message, user = os.getlogin()):
+    def exception(self, message):
         """This function traces the current exception raised into the log file"""
         if DSLogger.Instance:
-            DSLogger.Instance.exception(user, self.__class__.__name__, __name__, message)
+            DSLogger.Instance.exception(self.__user, self.__class__.__name__, __name__, message)
+
+    def __init__(self):
+        self.__user = os.getlogin()
 
 
 def asyncloggerexecutiontime(func):

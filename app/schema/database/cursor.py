@@ -4,11 +4,14 @@
 This module handles a cursor on the database.
 """
 
-class DSCursor:
+from logger.loggerobject import DSLoggerObject
+
+class DSCursor(DSLoggerObject):
     """This class handles a cursor on selection from the database"""
 
     def close(self):
         """Close and release the cursor"""
+        self.info(f"Gotten {self._nbrecords} records from {self.__tablename}")
         self.__cursor.close()
         self.__cursor = None
 
@@ -17,9 +20,19 @@ class DSCursor:
         return self
 
     def __next__(self):
-        return self.__table.new(next(self.__iterator))
+        record = next(self.__iterator)
+        for i, name in enumerate(self.__fields):
+            self.__record[name] = record[i]
+        self._nbrecords += 1
+        return self.__record
 
-    def __init__(self, cursor, table):
-        self.__table = table
+    def __init__(self, cursor, tablename, fields):
+        super().__init__()
         self.__cursor = cursor
         self.__iterator = None
+        self.__tablename = tablename
+        self.__fields = fields
+        self.__record = {}
+        for name in fields:
+            self.__record[name] = None
+        self._nbrecords = 0

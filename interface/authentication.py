@@ -23,7 +23,7 @@ fake_users_db = {
     "test": {
         "username": "test",
         "password": "password",  # ⚠️ Remplace cela par un hash sécurisé en production
-        "schema": "Syncytium"
+        "client": "templateclient"
     }
 }
 
