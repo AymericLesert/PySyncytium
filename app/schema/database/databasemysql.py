@@ -6,17 +6,67 @@ This module handles the database connexion for MySQL instance.
 """
 
 import json
+import jinja2
 
 import mysql.connector
 
 from exception.exceptiondatabasenotconnected import DSExceptionDatabaseNotConnected
 from exception.exceptiondatabaserequest import DSExceptionDatabaseRequest
+from exception.exceptiondatabaseunknown import DSExceptionDatabaseUnknown
 
 from .database import DSDatabase
 from .databasecursor import DSDatabaseCursor
 
 class DSDatabaseMySQL(DSDatabase):
     """This class implements a connexion to a MySQL Database"""
+
+    SCRIPT_CREATE_SCHEMA = """
+        CREATE SCHEMA `{{Name}}`;
+        USE `{{Name}}`;
+        {% for tablename in Tables %}
+        {% set table = Tables[tablename] %}
+        CREATE TABLE `{{table.Name}}`
+            (
+            {% for fieldname in table.Fields %}
+                {% set field = table.Fields[fieldname] %}
+                {% set type = "" %}
+                {% set default = "" %}
+                {% if field.Type == "String" %}
+                    {% set type = "VARCHAR(" ~ field.MaxLength ~ ")" %}
+                    {% if field.DefaultValue is not none %}
+                    {% set default = " DEFAULT '" ~ field.DefaultValue ~ "'" %}
+                    {% endif %}
+                {% elif field.Type == "Integer" %}
+                    {% set type = "INT" %}
+                    {% if field.DefaultValue is not none %}
+                    {% set default = " DEFAULT " ~ field.DefaultValue %}
+                    {% endif %}
+                {% else %}
+                    {% set type = "VARCHAR(2048)" %}
+                {% endif %}
+                {% set notnull = "" %}
+                `{{field.Name}}` {{type}}{{notnull}}{{default}},
+            {% endfor %}
+                CONSTRAINT PK_{{table.Name}} PRIMARY KEY (`{{table.Key}}`)
+            );
+        {% endfor %}
+    """
+
+    SCRIPT_CREATE_USER = """
+        CREATE USER IF NOT EXISTS '{{username}}'@'{{hostname}}';
+        ALTER USER '{{username}}'@'{{hostname}}' IDENTIFIED WITH 'mysql_native_password' AS '{{password}}';
+        GRANT {{privileges}} ON `{{schema}}`.* TO '{{username}}'@'{{hostname}}' WITH GRANT OPTION;
+        FLUSH PRIVILEGES;
+    """
+
+    def to_dict(self):
+        """Retrieves the database instance into a dictionary"""
+        return {
+            'hostname': self.__hostname,
+            'username': self.__username,
+            'password': self.__password,
+            'schema': self.__schema
+            }
 
     def connect(self):
         """This method describes the connection to MySQL"""
@@ -51,7 +101,10 @@ class DSDatabaseMySQL(DSDatabase):
 
         if self.isverbose:
             self.verbose(f"USE `{self.__schema}`")
-        self.__transaction.execute(f"USE `{self.__schema}`")
+        try:
+            self.__transaction.execute(f"USE `{self.__schema}`")
+        except Exception as exc:
+            raise DSExceptionDatabaseUnknown(f"Schema '{self.__schema}' unknown") from exc
         if self.isverbose:
             self.verbose("SHOW TABLES")
         self.__transaction.execute("SHOW TABLES")
@@ -80,6 +133,59 @@ class DSDatabaseMySQL(DSDatabase):
             self.verbose(json.dumps(structure, sort_keys=True, indent=2))
 
         return structure
+
+    def __execute_script(self, template_sql, items):
+        """Execute a SQL Script"""
+        template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(template_sql)
+        script = template.render(**items)
+        self.verbose(script)
+        for request in script.split(";"):
+            if request.strip() == '':
+                continue
+            self.info("Executing :")
+            self.info(request)
+            self.__transaction.execute(request)
+            self.info("Done")
+
+    def migrate(self, schema, database, allprivileges):
+        """Create or upgrade a schema from the json description"""
+        if self.isverbose:
+            self.verbose("Migrating the schema :")
+            self.verbose(json.dumps(schema, indent=2))
+
+        if schema is None or schema.get('Name', None) is None:
+            raise DSExceptionDatabaseUnknown("Schema non correctly defined")
+
+        if not allprivileges:
+            database['privileges'] = "DELETE, INSERT, UPDATE, SELECT"
+
+        if not self.isconnected:
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__hostname}' with user '{self.__username}'")
+
+        try:
+            self.__transaction.execute(f"USE `{schema.get('Name')}`")
+            self.info(f"Schema to upgrade : {schema.get('Name')}")
+            # TODO : Upgrade the schema
+            return False
+        except:
+            self.info(f"Creating the schema '{schema.get('Name')}' ...")
+
+            try:
+                self.__execute_script(DSDatabaseMySQL.SCRIPT_CREATE_SCHEMA, schema)
+            except:
+                self.exception("Error on migrating the schema ...")
+                raise
+
+            if not allprivileges:
+                self.info(f"Granting the schema '{schema.get('Name')}' ...")
+
+                try:
+                    self.__execute_script(DSDatabaseMySQL.SCRIPT_CREATE_USER, database)
+                except:
+                    self.exception("Error on granting the schema ...")
+                    raise
+
+            return True
 
     def insert(self, tablename, fields, values):
         """Return the list of values inserted into a table"""

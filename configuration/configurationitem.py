@@ -54,6 +54,16 @@ class DSConfigurationItem:
                     items[key] = self.__evaluate(value)
         return items
 
+    def __getattr__(self, name):
+        if name in self.__items:
+            return self.__evaluate(self.__items[name])
+        raise KeyError(f"Field '{name}' not found in record.")
+
+    def __getitem__(self, name):
+        if name in self.__items:
+            return self.__evaluate(self.__items[name])
+        raise KeyError(f"Field '{name}' not found in record.")
+
     def __evaluate(self, value):
         """This function replaces the substitution strings into a field from the configuration.
 
@@ -163,16 +173,6 @@ class DSConfigurationItem:
                         except:
                             return default_value
         return self.__evaluate(item)
-
-    def __getattr__(self, name):
-        if name in self.__items:
-            return self.__evaluate(self.__items[name])
-        raise KeyError(f"Field '{name}' not found in record.")
-
-    def __getitem__(self, name):
-        if name in self.__items:
-            return self.__evaluate(self.__items[name])
-        raise KeyError(f"Field '{name}' not found in record.")
 
     def __init__(self, root, item):
         def subitem(root, item):

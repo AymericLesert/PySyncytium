@@ -1,10 +1,11 @@
 # Database configuration for the application
 # TODO : These items must be secret ...
+# TODO : Build APP_DATABASE_USERNAME and APP_DATABASE_PASSWORD
 
 class: MySQL
 
 parameters:
   hostname: "localhost"
-  username: "${ROOT_DATABASE_USERNAME}"
-  password*: ${ROOT_DATABASE_PASSWORD}
+  username: ${APP_DATABASE_USERNAME}
+  password*: ${APP_DATABASE_PASSWORD}
   schema: "Syncytium"

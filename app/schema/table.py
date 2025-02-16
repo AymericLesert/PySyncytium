@@ -113,7 +113,6 @@ class DSTable(DSLoggerObject):
 
     def __iter__(self):
         if self.__cursor is not None:
-            self.__cursor.close()
             self.__cursor = None
             self.__iterator = None
 

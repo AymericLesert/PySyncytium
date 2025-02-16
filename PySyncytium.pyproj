@@ -92,20 +92,20 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include=".pylintrc" />
-    <Content Include="config\root\smtp.yml" />
+    <Content Include="config\main\smtp.yml" />
     <Content Include="config\templateclient\templateapplication\smtp.yml" />
     <Content Include="config\templateclient\templateclient.yml" />
     <Content Include="config\templateclient\templateapplication\application.yml" />
     <Content Include="config\templateclient\templateapplication\database.yml" />
     <Content Include="config\templateclient\templateapplication\schema.yml" />
-    <Content Include="config\root.yml" />
+    <Content Include="config\main.yml" />
     <Content Include="config\clients.yml" />
     <Content Include="config\interface\websocket.yml" />
     <Content Include="config\interface\web.yml" />
     <Content Include="config\interface\api.yml" />
     <Content Include="config\interface.yml" />
-    <Content Include="config\root\database.yml" />
-    <Content Include="config\root\schema.yml" />
+    <Content Include="config\main\database.yml" />
+    <Content Include="config\main\schema.yml" />
     <Content Include="interface\web\script\chat.js" />
     <Content Include="interface\web\template\chat.html" />
     <Content Include="interface\web\template\update.html" />
@@ -126,6 +126,7 @@
     <Content Include="test\configuration\database.yml" />
     <Content Include="test\configuration\logging.yml" />
     <Content Include="test\database\schema.yml" />
+    <Content Include="test\PSTest.sql" />
     <Content Include="VERSION" />
     <Content Include="APPLICATION" />
   </ItemGroup>
@@ -145,7 +146,7 @@
     <Folder Include="config\templateclient\" />
     <Folder Include="config\templateclient\templateapplication\" />
     <Folder Include="config\interface\" />
-    <Folder Include="config\root\" />
+    <Folder Include="config\main\" />
     <Folder Include="app\" />
     <Folder Include="app\schema\database\" />
     <Folder Include="interface\api\" />

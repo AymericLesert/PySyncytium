@@ -1,5 +1,0 @@
-# Configuration items of the root application
-
-database: root/database.yml
-schema: root/schema.yml
-smtp: root/smtp.yml

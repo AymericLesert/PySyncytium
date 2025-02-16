@@ -13,6 +13,8 @@ from dotenv import load_dotenv
 
 from configuration.configuration import DSConfiguration
 from logger.logger import DSLogger
+from app.schema.database.databasefactory import factory as databasefactory
+from app.schema.schema import DSSchema
 
 load_dotenv()
 
@@ -46,5 +48,9 @@ if __name__ == "__main__":
                     host=configuration.items.interface.websocket.hostname,
                     port=configuration.items.interface.websocket.port,
                     log_config=None)
+    elif args.name == "root":
+        schema = DSSchema(databasefactory(configuration.items.main.database), configuration.items.main.schema)
+        with schema:
+            schema.migrate()
 
     log.close()

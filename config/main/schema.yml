@@ -1,0 +1,40 @@
+# Description of the main database
+
+Name: PSRoot
+Description: "Gestion du périmètre de l'application PySyncytium'"
+Version: 1
+
+Tables:
+
+  User:
+    Name: User
+    Description: "Liste des utilisateurs"
+    Key: Login
+    Fields:
+      Login:
+        Description: "Identifiant"
+        MaxLength: 80
+      LastName:
+        Description: "Nom de l'utilisateur"
+        MaxLength: 40
+      FirstName:
+        Description: "Prénom de l'utilisateur"
+        MaxLength: 40
+      Password:
+        Description: "Mot de passe"
+        MaxLength: 128
+      ClientId:
+        Description: "Client"
+        Type: Integer
+
+  Client:
+    Name: Client
+    Description: "Liste des clients"
+    Key: Id
+    Fields:
+      Id:
+        Type: Integer
+      Nom:
+        Description: "Nom du client"
+        MaxLength: 40
+        DefaultValue: "Concilium"
