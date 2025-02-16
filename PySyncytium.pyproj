@@ -25,6 +25,8 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="app\schema\cursor.py" />
+    <Compile Include="app\schema\database\databasefactory.py" />
     <Compile Include="app\service\__init__.py" />
     <Compile Include="app\__init__.py" />
     <Compile Include="configuration\configuration.py" />
@@ -32,13 +34,14 @@
     <Compile Include="configuration\__init__.py" />
     <Compile Include="config\logging.yml" />
     <Compile Include="exception\exceptiondatabase.py" />
+    <Compile Include="exception\exceptiondatabaseunknown.py" />
     <Compile Include="exception\exceptiondatabaserequest.py" />
     <Compile Include="exception\exceptiondatabasenotconnected.py" />
     <Compile Include="exception\exception.py" />
     <Compile Include="exception\__init__.py" />
     <Compile Include="interface\authentication.py" />
     <Compile Include="interface\api\__init__.py" />
-    <Compile Include="app\schema\database\cursor.py" />
+    <Compile Include="app\schema\database\databasecursor.py" />
     <Compile Include="app\schema\database\databasemysql.py" />
     <Compile Include="app\schema\database\database.py" />
     <Compile Include="app\schema\database\__init__.py" />
@@ -57,7 +60,7 @@
     <Compile Include="syncytium.py" />
     <Compile Include="test\configuration.py" />
     <Compile Include="test\databasemysql.py" />
-    <Compile Include="test\main_database.py" />
+    <Compile Include="test\schema.py" />
     <Compile Include="app\schema\criteria\criteriafactory.py" />
     <Compile Include="app\schema\record.py" />
     <Compile Include="app\schema\criteria\criterialogicalnot.py" />
@@ -122,6 +125,7 @@
     <Content Include="test\configuration.yml" />
     <Content Include="test\configuration\database.yml" />
     <Content Include="test\configuration\logging.yml" />
+    <Content Include="test\database\schema.yml" />
     <Content Include="VERSION" />
     <Content Include="APPLICATION" />
   </ItemGroup>

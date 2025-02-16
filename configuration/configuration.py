@@ -75,12 +75,12 @@ class DSConfiguration:
         with open(module_path + "/" + filename, encoding = "utf-8") as content_file:
             return content_file.read().strip()
 
-    def get_property(self, key, default_value = None):
+    def get(self, key, default_value = None):
         """
         Retrieve a value from a key, describing a path of a value into the configuration file
         if the key doesn't exist, the default value is retrieved
         """
-        return self.__items.get_property(key, default_value)
+        return self.__items.get(key, default_value)
 
     def __init__(self, filename):
         self.__configuration = self._load(filename)

@@ -103,8 +103,7 @@ class TestDSDatabaseMySQL(unittest.TestCase):
 
 if __name__ == "__main__":
     load_dotenv()
-    configuration = DSConfiguration('test/database.yml')
-    log = DSLogger(configuration)
+    log = DSLogger(DSConfiguration('test/database.yml'))
     log.open()
     unittest.main()
     log.close()

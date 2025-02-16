@@ -13,21 +13,21 @@ from exception.exceptiondatabasenotconnected import DSExceptionDatabaseNotConnec
 from exception.exceptiondatabaserequest import DSExceptionDatabaseRequest
 
 from .database import DSDatabase
-from .cursor import DSCursor
+from .databasecursor import DSDatabaseCursor
 
 class DSDatabaseMySQL(DSDatabase):
     """This class implements a connexion to a MySQL Database"""
 
     def connect(self):
         """This method describes the connection to MySQL"""
-        self.debug(f"Connecting to the database '{self.__host}' with user '{self.__username}' ...")
+        self.debug(f"Connecting to the database '{self.__hostname}' with user '{self.__username}' ...")
         try:
-            self.__database = mysql.connector.connect(host=self.__host, user=self.__username, password=self.__password)
+            self.__database = mysql.connector.connect(host=self.__hostname, user=self.__username, password=self.__password)
             self.__database.start_transaction()
             self.__transaction = self.__database.cursor()
-            self.info(f"Database '{self.__host}' with user '{self.__username}' connected")
+            self.info(f"Database '{self.__hostname}' with user '{self.__username}' connected")
         except:
-            self.exception(f"Error on connection to the database '{self.__host}' with user '{self.__username}'")
+            self.exception(f"Error on connection to the database '{self.__hostname}' with user '{self.__username}'")
             self.disconnect()
         return self
 
@@ -45,7 +45,7 @@ class DSDatabaseMySQL(DSDatabase):
         self.debug(f"Retrieveing the schema '{self.__schema}' ...")
 
         if not self.isconnected:
-            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__hostname}' with user '{self.__username}'")
 
         structure = { 'Name': self.__schema, 'Tables' : {} }
 
@@ -90,7 +90,7 @@ class DSDatabaseMySQL(DSDatabase):
         self.debug(f"Executing '{query}' ...")
 
         if not self.isconnected:
-            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__hostname}' with user '{self.__username}'")
 
         items = []
         try:
@@ -137,14 +137,14 @@ class DSDatabaseMySQL(DSDatabase):
         self.debug(f"Executing '{query}' ...")
 
         if not self.isconnected:
-            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__hostname}' with user '{self.__username}'")
 
         try:
             cursor = self.__database.cursor()
             cursor.execute(query)
 
             self.info(f"Selecting data from '{tablename}' where '{query}') ...")
-            return DSCursor(cursor, tablename, fields).set_user(self.user)
+            return DSDatabaseCursor(cursor, tablename, fields).set_user(self.user)
         except Exception as exc:
             self.exception(f"Error on executing the request '{query}'")
             raise DSExceptionDatabaseRequest(f"Error on executing the request '{query}'") from exc
@@ -159,7 +159,7 @@ class DSDatabaseMySQL(DSDatabase):
         self.debug(f"Executing '{query}' ...")
 
         if not self.isconnected:
-            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__hostname}' with user '{self.__username}'")
 
         items = []
         count = 0
@@ -215,7 +215,7 @@ class DSDatabaseMySQL(DSDatabase):
         self.debug(f"Executing '{query}' ...")
 
         if not self.isconnected:
-            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__hostname}' with user '{self.__username}'")
 
         items = []
         try:
@@ -253,7 +253,7 @@ class DSDatabaseMySQL(DSDatabase):
         self.debug("Committing ...")
 
         if not self.isconnected:
-            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__hostname}' with user '{self.__username}'")
 
         try:
             self.__database.commit()
@@ -267,7 +267,7 @@ class DSDatabaseMySQL(DSDatabase):
         self.debug("Rollbacking ...")
 
         if not self.isconnected:
-            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__host}' with user '{self.__username}'")
+            raise DSExceptionDatabaseNotConnected(f"No connection to the database '{self.__hostname}' with user '{self.__username}'")
 
         try:
             self.__database.rollback()
@@ -278,7 +278,7 @@ class DSDatabaseMySQL(DSDatabase):
 
     def disconnect(self):
         """This method describes the disconnection to MySQL"""
-        self.debug(f"Disconnecting to the database '{self.__host}' with user '{self.__username}' ...")
+        self.debug(f"Disconnecting to the database '{self.__hostname}' with user '{self.__username}' ...")
 
         if self.__transaction is not None:
             try:
@@ -294,12 +294,12 @@ class DSDatabaseMySQL(DSDatabase):
                 self.exception("Error on disconnecting the database")
             self.__database = None
 
-        self.info(f"Database '{self.__host}' with user '{self.__username}' disconnected")
+        self.info(f"Database '{self.__hostname}' with user '{self.__username}' disconnected")
         return self
 
-    def __init__(self, host, username, password, schema):
+    def __init__(self, hostname, username, password, schema):
         super().__init__()
-        self.__host = host
+        self.__hostname = hostname
         self.__username = username
         self.__password = password
         self.__schema = schema

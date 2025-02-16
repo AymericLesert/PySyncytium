@@ -1,6 +1,6 @@
 # Main database connection
 
-class: DSDatabaseMySQL
+class: MySQL
 
 parameters:
   hostname: "localhost"

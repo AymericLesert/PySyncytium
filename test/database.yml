@@ -2,3 +2,4 @@ name: 'Test unitaire de la base de données'
 
 logging: database/logging.yml
 database: database/database.yml
+schema: database/schema.yml

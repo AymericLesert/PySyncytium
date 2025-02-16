@@ -2,18 +2,18 @@
 
 """Create a criteria from a dictionary"""
 
-from schema.criteria.criteria import DSCriteria
-from schema.criteria.criteriacomparableequal import DSCriteriaComparableEqual
-from schema.criteria.criteriacomparablegreater import DSCriteriaComparableGreater
-from schema.criteria.criteriacomparablegreaterorequal import DSCriteriaComparableGreaterOrEqual
-from schema.criteria.criteriacomparablein import DSCriteriaComparableIn
-from schema.criteria.criteriacomparableless import DSCriteriaComparableLess
-from schema.criteria.criteriacomparablelessorequal import DSCriteriaComparableLessOrEqual
-from schema.criteria.criteriacomparablelike import DSCriteriaComparableLike
-from schema.criteria.criteriacomparablenotequal import DSCriteriaComparableNotEqual
-from schema.criteria.criterialogicaland import DSCriteriaLogicalAnd
-from schema.criteria.criterialogicalnot import DSCriteriaLogicalNot
-from schema.criteria.criterialogicalor import DSCriteriaLogicalOr
+from .criteria import DSCriteria
+from .criteriacomparableequal import DSCriteriaComparableEqual
+from .criteriacomparablegreater import DSCriteriaComparableGreater
+from .criteriacomparablegreaterorequal import DSCriteriaComparableGreaterOrEqual
+from .criteriacomparablein import DSCriteriaComparableIn
+from .criteriacomparableless import DSCriteriaComparableLess
+from .criteriacomparablelessorequal import DSCriteriaComparableLessOrEqual
+from .criteriacomparablelike import DSCriteriaComparableLike
+from .criteriacomparablenotequal import DSCriteriaComparableNotEqual
+from .criterialogicaland import DSCriteriaLogicalAnd
+from .criterialogicalnot import DSCriteriaLogicalNot
+from .criterialogicalor import DSCriteriaLogicalOr
 
 
 def factory(criteria, table):

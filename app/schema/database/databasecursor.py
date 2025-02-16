@@ -6,7 +6,7 @@ This module handles a cursor on the database.
 
 from logger.loggerobject import DSLoggerObject
 
-class DSCursor(DSLoggerObject):
+class DSDatabaseCursor(DSLoggerObject):
     """This class handles a cursor on selection from the database"""
 
     def close(self):

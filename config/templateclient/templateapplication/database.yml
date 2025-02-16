@@ -1,7 +1,7 @@
 # Database configuration for the application
 # TODO : These items must be secret ...
 
-class: DSDatabaseMySQL
+class: MySQL
 
 parameters:
   hostname: "localhost"
