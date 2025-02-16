@@ -15,7 +15,7 @@ class TestDSConfiguration(unittest.TestCase):
 
     def setUp(self):
         """Initialization of the configuration items"""
-        self.configuration = DSConfiguration('test/config.yml')
+        self.configuration = DSConfiguration('test/configuration.yml')
 
     def test_json(self):
         """Checks if the dictionaries are expected (from the file and from the interpretation)"""
@@ -137,12 +137,12 @@ class TestDSConfiguration(unittest.TestCase):
                          "%(asctime)s [%(levelname)-5s] (%(process)d:%(processName)s) %(message)s")
         self.assertEqual(self.configuration.items.database.hostname, "localhost")
         self.assertEqual(self.configuration.items.database.username, "root")
-        self.assertEqual(self.configuration.get_property("database.username", None), "root")
-        self.assertEqual(self.configuration.get_property("database.unknown", "#NA"), "#NA")
+        self.assertEqual(self.configuration.get("database.username", None), "root")
+        self.assertEqual(self.configuration.get("database.unknown", "#NA"), "#NA")
         self.assertEqual(self.configuration.application, "Syncytium")
         self.assertRegex(self.configuration.version, r"^v[0-9]+(\.[0-9]+)*$")
         with self.assertRaises(KeyError):
-            self.configuration.items.database.unknown
+            _ = self.configuration.items.database.unknown
 
 if __name__ == "__main__":
     load_dotenv()

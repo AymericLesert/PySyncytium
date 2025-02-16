@@ -1,0 +1,6 @@
+# Description of the current client
+
+name: "Template client"
+
+applications:
+- templateapplication/application.yml

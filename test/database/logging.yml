@@ -1,0 +1,17 @@
+version: 1
+verbose: True
+
+formatters:
+    standard:
+        format: "%(asctime)s [%(levelname)-5s] (%(process)d:%(processName)s) %(message)s"
+
+handlers:
+    console:
+        class: logging.StreamHandler
+        level: DEBUG
+        formatter: standard
+        stream: ext://sys.stdout
+
+root:
+    level: NOTSET
+    handlers: [console]

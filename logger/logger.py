@@ -51,7 +51,7 @@ class DSLogger:
         handler = DSLogger.DSLoggerHandler()
         handler.setFormatter(logging.Formatter("%(message)s"))
 
-        for name in self.__configuration.items.get_property('logging.syncytium.loggers', []):
+        for name in self.__configuration.items.get('logging.syncytium.loggers', []):
             if name in logging.Logger.manager.loggerDict:
                 continue
             self.__logger.debug("Adding logger '%s' ...", name)
@@ -255,20 +255,20 @@ class DSLogger:
         self.__reload_timer = None
         self.__cleanup_timer = None
         self.__debug = False
-        self.__verbose = self.__configuration.items.get_property('logging.verbose', False)
+        self.__verbose = self.__configuration.items.get('logging.verbose', False)
         self.__files = {}
 
         for handler in self.__logger.handlers:
-            if self.__configuration.get_property(f"logging.handlers.{handler.name}.level", "INFO") == "DEBUG":
+            if self.__configuration.get(f"logging.handlers.{handler.name}.level", "INFO") == "DEBUG":
                 self.__debug = True
             if isinstance(handler, logging.FileHandler):
                 self.__files[handler.name] = self.__configuration.items.logging.handlers[handler.name].filename
 
-        interval = self.__configuration.items.get_property('logging.syncytium.reload.interval', None)
+        interval = self.__configuration.items.get('logging.syncytium.reload.interval', None)
         if interval is not None:
             self.__reload_timer = DSLoggerTimer(self.reload, interval)
 
-        interval = self.__configuration.items.get_property('logging.syncytium.cleanup.interval', None)
+        interval = self.__configuration.items.get('logging.syncytium.cleanup.interval', None)
         if interval is not None:
             self.__cleanup_timer = DSLoggerTimer(self.cleanup, interval)
 

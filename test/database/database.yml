@@ -1,0 +1,9 @@
+# Test database connection
+
+class: MySQL
+
+parameters:
+  hostname: "${ROOT_DATABASE_HOSTNAME?localhost}"
+  username: "${ROOT_DATABASE_USERNAME}"
+  password*: ${ROOT_DATABASE_PASSWORD}
+  schema: "Syncytium"

@@ -26,6 +26,10 @@ class DSConfigurationItem:
         """Retrieve the current configuration items"""
         return self.__items
 
+    def keys(self):
+        """Retrieve the current configuration keys"""
+        return self.__items.keys()
+
     def to_dict(self):
         """Convert the item to a dict"""
         def subitem(item):
@@ -102,9 +106,9 @@ class DSConfigurationItem:
             # Check existing the configuration item
 
             if key[0] == '.':
-                value = self.root.get_property(key[1:])
+                value = self.root.get(key[1:])
             else:
-                value = self.get_property(key)
+                value = self.get(key)
             if value is not None:
                 return value
 
@@ -135,17 +139,7 @@ class DSConfigurationItem:
 
         return value
 
-    def __getattr__(self, name):
-        if name in self.__items:
-            return self.__evaluate(self.__items[name])
-        raise KeyError(f"Field '{name}' not found in record.")
-
-    def __getitem__(self, name):
-        if name in self.__items:
-            return self.__evaluate(self.__items[name])
-        raise KeyError(f"Field '{name}' not found in record.")
-
-    def get_property(self, key, default_value = None):
+    def get(self, key, default_value = None):
         """
         Retrieve a value from a key, describing a path of a value from the current item
         if the key doesn't exist, the default value is retrieved
@@ -169,6 +163,16 @@ class DSConfigurationItem:
                         except:
                             return default_value
         return self.__evaluate(item)
+
+    def __getattr__(self, name):
+        if name in self.__items:
+            return self.__evaluate(self.__items[name])
+        raise KeyError(f"Field '{name}' not found in record.")
+
+    def __getitem__(self, name):
+        if name in self.__items:
+            return self.__evaluate(self.__items[name])
+        raise KeyError(f"Field '{name}' not found in record.")
 
     def __init__(self, root, item):
         def subitem(root, item):

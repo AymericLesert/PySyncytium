@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=unused-argument
 
 """
 This module handles the database connexion.
 """
 
-# pylint: disable=unused-argument
+from logger.loggerobject import DSLoggerObject
 
-class DSDatabase:
+class DSDatabase(DSLoggerObject):
     """This abstract class describes the main functions from a database connexion"""
 
     def connect(self):
@@ -14,37 +15,30 @@ class DSDatabase:
         return self
 
     @property
-    def is_connected(self):
+    def isconnected(self):
         """Return if the connection is done"""
         return False
 
-    def get_description(self, schema):
+    @property
+    def schema(self):
         """Retrieve a JSON description of the tables from a given schema"""
         return {}
 
-    def begin_transaction(self):
-        """Start a new transaction"""
-        return self
-
-    def insert(self, dstable, values):
-        """Return the list of keys created while inserting the list of values"""
+    def insert(self, tablename, fields, values):
+        """Return the list of values inserted into a table"""
         return None
 
-    def select(self, dstable, clause):
+    def select(self, tablename, fields, clause = None):
         """Return a cursor to the selection of the dstable"""
         return None
 
-    def update(self, dstable, oldvalue, newvalue):
-        """Return the key updated"""
+    def update(self, tablename, fields, oldvalues, newvalues):
+        """Return the new value"""
         return None
 
-    def delete(self, dstable, values):
-        """Return the list of keys removed"""
+    def delete(self, tablename, fields, values):
+        """Return the list of values removed"""
         return None
-
-    def end_transaction(self):
-        """Close the current transaction"""
-        return self
 
     def commit(self):
         """Commit the current transaction"""

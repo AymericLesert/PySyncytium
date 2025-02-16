@@ -1,0 +1,4 @@
+name: 'Test unitaire'
+
+logging: configuration/logging.yml
+database: configuration/database.yml
