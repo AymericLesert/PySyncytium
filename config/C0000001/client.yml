@@ -1,6 +1,6 @@
 # Description of the current client
 
+id: C0000001
 name: "Template client"
 
-applications:
-- templateapplication/application.yml
+A0000001: A0000001/application.yml

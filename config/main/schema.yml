@@ -9,11 +9,18 @@ Tables:
   User:
     Name: User
     Description: "Liste des utilisateurs"
-    Key: Login
+    Key:
+      - Interface
+      - Login
     Fields:
+      Interface:
+        Type: Integer
       Login:
         Description: "Identifiant"
         MaxLength: 80
+      ClientId:
+        Description: "Client"
+        Type: Integer
       LastName:
         Description: "Nom de l'utilisateur"
         MaxLength: 40
@@ -23,9 +30,9 @@ Tables:
       Password:
         Description: "Mot de passe"
         MaxLength: 128
-      ClientId:
-        Description: "Client"
-        Type: Integer
+      NewPassword:
+        Description: "Clé pour changer de mot de passe"
+        MaxLength: 128
 
   Client:
     Name: Client
@@ -38,3 +45,18 @@ Tables:
         Description: "Nom du client"
         MaxLength: 40
         DefaultValue: "Concilium"
+
+  Application:
+    Name: Application
+    Description: "Liste des applications"
+    Key: Id
+    Fields:
+      Id:
+        Type: Integer
+      ClientId:
+        Description: "Client"
+        Type: Integer
+      Nom:
+        Description: "Nom de l'application'"
+        MaxLength: 40
+        DefaultValue: "Test"

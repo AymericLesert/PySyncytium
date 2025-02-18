@@ -1,0 +1,20 @@
+# Schema description of the current of the application
+
+Name: PSTest
+Description: "Modéle de données de l'application 1 du client 1"
+
+Tables:
+  User:
+    Name: User
+    Description: "Liste des utilisateurs"
+    Key: Name
+    Fields:
+      Name:
+        Description: "Nom et prénom"
+        Type: String
+        MaxLength: 80
+      PhoneNumber:
+        Type: String
+        MaxLength: 14
+      Age:
+        Type: Integer

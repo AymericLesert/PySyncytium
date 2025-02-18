@@ -5,8 +5,10 @@
 This module handles the database connexion for MySQL instance.
 """
 
+import os
 import json
 import jinja2
+from cryptography.fernet import Fernet
 
 import mysql.connector
 
@@ -47,7 +49,15 @@ class DSDatabaseMySQL(DSDatabase):
                 {% set notnull = "" %}
                 `{{field.Name}}` {{type}}{{notnull}}{{default}},
             {% endfor %}
-                CONSTRAINT PK_{{table.Name}} PRIMARY KEY (`{{table.Key}}`)
+            {% set ns = namespace(primarykey="") %}
+            {% for index in range(table.Key | length) %}
+                {% if ns.primarykey == "" %}
+                    {% set ns.primarykey = "`" ~ table.Key[index] ~ "`" %}
+                {% else %}
+                    {% set ns.primarykey = ns.primarykey ~ ", `" ~ table.Key[index] ~ "`" %}
+                {% endif %}
+            {% endfor %}
+                CONSTRAINT PK_{{table.Name}} PRIMARY KEY ({{ns.primarykey}})
             );
         {% endfor %}
     """
@@ -72,7 +82,9 @@ class DSDatabaseMySQL(DSDatabase):
         """This method describes the connection to MySQL"""
         self.debug(f"Connecting to the database '{self.__hostname}' with user '{self.__username}' ...")
         try:
-            self.__database = mysql.connector.connect(host=self.__hostname, user=self.__username, password=self.__password)
+            cipher_suite = Fernet(bytes(os.getenv("PSPASSWORD_KEY"), 'utf-8'))
+            password = cipher_suite.decrypt(bytes(self.__password, 'utf-8')).decode('utf-8')
+            self.__database = mysql.connector.connect(host=self.__hostname, user=self.__username, password=password)
             self.__database.start_transaction()
             self.__transaction = self.__database.cursor()
             self.info(f"Database '{self.__hostname}' with user '{self.__username}' connected")
@@ -110,7 +122,7 @@ class DSDatabaseMySQL(DSDatabase):
         self.__transaction.execute("SHOW TABLES")
 
         for (tablename,) in self.__transaction.fetchall():
-            structuretable = { 'Name': tablename, 'Fields': {} }
+            structuretable = { 'Name': tablename, 'Fields': {}, 'Key': [] }
 
             if self.isverbose:
                 self.verbose(f"DESCRIBE `{tablename}`")
@@ -124,7 +136,7 @@ class DSDatabaseMySQL(DSDatabase):
                     'Nullable' : nullable
                     }
                 if primarykey == 'PRI':
-                    structuretable['Key'] = fieldname
+                    structuretable['Key'].append(fieldname)
                 structuretable['Fields'][fieldname] = structurefield
             structure['Tables'][tablename] = structuretable
         self.info(f"The schema '{self.__schema}' is retrieved")

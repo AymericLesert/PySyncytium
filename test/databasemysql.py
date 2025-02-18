@@ -19,26 +19,26 @@ class TestDSDatabaseMySQL(unittest.TestCase):
 
     def test_01_connection(self):
         """Checks if the connection can be done"""
-        with DSDatabaseMySQL(os.getenv("ROOT_DATABASE_HOSTNAME", "localhost"),
-                             os.getenv("ROOT_DATABASE_USERNAME"),
-                             os.getenv("ROOT_DATABASE_PASSWORD"),
-                             "Syncytium"):
+        with DSDatabaseMySQL(os.getenv("PSTEST_DATABASE_HOSTNAME", "localhost"),
+                             os.getenv("PSTEST_DATABASE_USERNAME"),
+                             os.getenv("PSTEST_DATABASE_PASSWORD"),
+                             "PSTest"):
             pass
 
     def test_02_schema(self):
         """Retrieves the schema from database"""
-        with DSDatabaseMySQL(os.getenv("ROOT_DATABASE_HOSTNAME", "localhost"),
-                             os.getenv("ROOT_DATABASE_USERNAME"),
-                             os.getenv("ROOT_DATABASE_PASSWORD"),
-                             "Syncytium") as db:
+        with DSDatabaseMySQL(os.getenv("PSTEST_DATABASE_HOSTNAME", "localhost"),
+                             os.getenv("PSTEST_DATABASE_USERNAME"),
+                             os.getenv("PSTEST_DATABASE_PASSWORD"),
+                             "PSTest") as db:
             _ = db.schema
 
     def test_03_select(self):
         """Test select instruction"""
-        with DSDatabaseMySQL(os.getenv("ROOT_DATABASE_HOSTNAME", "localhost"),
-                             os.getenv("ROOT_DATABASE_USERNAME"),
-                             os.getenv("ROOT_DATABASE_PASSWORD"),
-                             "Syncytium") as db:
+        with DSDatabaseMySQL(os.getenv("PSTEST_DATABASE_HOSTNAME", "localhost"),
+                             os.getenv("PSTEST_DATABASE_USERNAME"),
+                             os.getenv("PSTEST_DATABASE_PASSWORD"),
+                             "PSTest") as db:
             for record in db.select("User", ["Name", "Age"]):
                 print(record)
 
@@ -47,10 +47,10 @@ class TestDSDatabaseMySQL(unittest.TestCase):
 
     def test_04_insert(self):
         """Test insert instruction"""
-        with DSDatabaseMySQL(os.getenv("ROOT_DATABASE_HOSTNAME", "localhost"),
-                             os.getenv("ROOT_DATABASE_USERNAME"),
-                             os.getenv("ROOT_DATABASE_PASSWORD"),
-                             "Syncytium") as db:
+        with DSDatabaseMySQL(os.getenv("PSTEST_DATABASE_HOSTNAME", "localhost"),
+                             os.getenv("PSTEST_DATABASE_USERNAME"),
+                             os.getenv("PSTEST_DATABASE_PASSWORD"),
+                             "PSTest") as db:
             try:
                 db.insert("User", ["Name", "Age", "PhoneNumber"], [{"Name": "Tutu", "Age": 32, "PhoneNumber": "Test"}])
                 db.commit()
@@ -61,10 +61,10 @@ class TestDSDatabaseMySQL(unittest.TestCase):
 
     def test_05_update(self):
         """Test update instruction"""
-        with DSDatabaseMySQL(os.getenv("ROOT_DATABASE_HOSTNAME", "localhost"),
-                             os.getenv("ROOT_DATABASE_USERNAME"),
-                             os.getenv("ROOT_DATABASE_PASSWORD"),
-                             "Syncytium") as db:
+        with DSDatabaseMySQL(os.getenv("PSTEST_DATABASE_HOSTNAME", "localhost"),
+                             os.getenv("PSTEST_DATABASE_USERNAME"),
+                             os.getenv("PSTEST_DATABASE_PASSWORD"),
+                             "PSTest") as db:
             try:
                 db.update("User", ["Name", "Age", "PhoneNumber"],
                           {"Name": "Tutu", "Age": 32, "PhoneNumber": "Test"},
@@ -88,10 +88,10 @@ class TestDSDatabaseMySQL(unittest.TestCase):
 
     def test_06_delete(self):
         """Test delete instruction"""
-        with DSDatabaseMySQL(os.getenv("ROOT_DATABASE_HOSTNAME", "localhost"),
-                             os.getenv("ROOT_DATABASE_USERNAME"),
-                             os.getenv("ROOT_DATABASE_PASSWORD"),
-                             "Syncytium") as db:
+        with DSDatabaseMySQL(os.getenv("PSTEST_DATABASE_HOSTNAME", "localhost"),
+                             os.getenv("PSTEST_DATABASE_USERNAME"),
+                             os.getenv("PSTEST_DATABASE_PASSWORD"),
+                             "PSTest") as db:
             try:
                 db.delete("User", ["Name"], [{"Name": "Tutu"}, {"Name": "Titi"}])
                 db.commit()

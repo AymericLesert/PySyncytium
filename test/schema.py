@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# pylint: disable=bare-except
+# pylint: disable=no-member
 
 """
 Unit test (Schema)

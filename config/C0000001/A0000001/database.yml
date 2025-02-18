@@ -6,6 +6,6 @@ class: MySQL
 
 parameters:
   hostname: "localhost"
-  username: ${APP_DATABASE_USERNAME}
-  password*: ${APP_DATABASE_PASSWORD}
-  schema: "Syncytium"
+  username: ${PSTEST_DATABASE_USERNAME}
+  password*: ${PSTEST_DATABASE_PASSWORD}
+  schema: "PSTest"

@@ -82,6 +82,8 @@ class DSConfiguration:
         """
         return self.__items.get(key, default_value)
 
-    def __init__(self, filename):
-        self.__configuration = self._load(filename)
+    def __init__(self, filename = None):
+        self.__configuration = {}
+        if filename is not None:
+            self.__configuration = self._load(filename)
         self.__items = DSConfigurationItem(self, self.__configuration)

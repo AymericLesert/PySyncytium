@@ -32,7 +32,7 @@ class TestDSConfiguration(unittest.TestCase):
                                          },
                                      "cleanup": {
                                          "interval": 86400,
-                                         "directory": "${SYNCYTIUM_LOG_DIRECTORY}",
+                                         "directory": "${PSLOG_DIRECTORY}",
                                          "pattern": "^${APPLICATION}-.*\\.log$",
                                          "nbdays": 20
                                          },
@@ -54,7 +54,7 @@ class TestDSConfiguration(unittest.TestCase):
                                          "class": "logging.handlers.RotatingFileHandler",
                                          "level": "DEBUG",
                                          "formatter": "standard",
-                                         "filename": "${SYNCYTIUM_LOG_DIRECTORY}/${APPLICATION}-${date:%Y-%m-%d}.log",
+                                         "filename": "${PSLOG_DIRECTORY}/${APPLICATION}-${date:%Y-%m-%d}.log",
                                          "maxBytes": 16777216,
                                          "backupCount": 10,
                                          "encoding": "utf8"

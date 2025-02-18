@@ -1,4 +1,14 @@
 # Configuration of the api server
 
-hostname: 127.0.0.1
-port: 8000
+server:
+    hostname: 127.0.0.1
+    port: 8000
+
+jwt:
+    secret_key*: ${PSJWT_SECRET_KEY?mysecret}
+    algorithm*: ${PSJWT_ALGORITHM}
+    expires: 30
+
+password:
+    algorithm*: ${PSPASSWORD_ALGORITHM}
+    encoding: "utf-8"
