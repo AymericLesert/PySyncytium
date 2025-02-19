@@ -37,10 +37,16 @@ def new_token(interface, username, password, configuration):
 
             if users[0].Password != password:
                 raise HTTPException(status_code=400, detail="Invalid username or password")
+
+            client = None
+            clients = list(schema.Client.select(lambda record : record.Id == users[0].ClientId))
+            if len(clients) > 0:
+                client = clients[0].Name
+
             return {
                 "access_token": create_access_token({
                     "sub": username, 
-                    "client": users[0].ClientId
+                    "client": client
                     }, configuration),
                 "token_type": "bearer"
                 }

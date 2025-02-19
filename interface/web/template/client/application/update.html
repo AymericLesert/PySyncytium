@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Modification d'un item de {{table.Name}}</title>
+    <title>{{client.id}}.{{application.id}}</title>
 </head>
 <body>
-    <h2>{{table.Name}}</h2>
-    <form action="/update/{{table.Name}}/{{key}}" method="post">
+    <h2>Modification d'un enregistrement de {{table.Name}}</h2>
+    <form action="/{{application.id}}/update/{{table.Name}}/{{keys}}" method="post">
         {% for field in table.Fields %}
         <label for="{{field}}">{{table.Fields[field].Name}} ({{table.Fields[field].Description}}) :</label>
         <input type="text" id="{{field}}" name="{{field}}" value="{{record[field]}}">

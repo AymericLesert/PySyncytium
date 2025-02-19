@@ -8,7 +8,7 @@ syncytium:
     cleanup:
         interval: 86400
         directory: ${PSLOG_DIRECTORY}
-        pattern: "^${APPLICATION}-.*\\.log$"
+        pattern: "^${PROJECT}-.*\\.log$"
         nbdays: 20
 
     loggers:
@@ -30,7 +30,7 @@ handlers:
         class: logging.handlers.RotatingFileHandler
         level: DEBUG
         formatter: standard
-        filename: ${PSLOG_DIRECTORY}/${APPLICATION}-${date:%Y-%m-%d}.log
+        filename: ${PSLOG_DIRECTORY}/${PROJECT}-${date:%Y-%m-%d}.log
         maxBytes: 16777216 # 16Mb
         backupCount: 10
         encoding: utf8

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{client.Name}}</title>
+</head>
+<body>
+    <h2>Bienvenue {{ user.sub }} !</h2>
+    <p>Liste des applications</p>
+    <ul>
+        {% for application in client.applications %}
+        <li><a href="/{{application}}/index.html">{{application}}</a></li>
+        {% endfor %}
+        <li><a href="chat">Chat</a></li>
+    </ul>
+</body>
+</html>

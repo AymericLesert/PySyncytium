@@ -41,7 +41,7 @@ Tables:
     Fields:
       Id:
         Type: Integer
-      Nom:
+      Name:
         Description: "Nom du client"
         MaxLength: 40
         DefaultValue: "Concilium"
@@ -56,7 +56,7 @@ Tables:
       ClientId:
         Description: "Client"
         Type: Integer
-      Nom:
+      Name:
         Description: "Nom de l'application'"
         MaxLength: 40
         DefaultValue: "Test"

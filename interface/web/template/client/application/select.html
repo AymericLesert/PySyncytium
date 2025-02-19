@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Liste des enregistrements de {{table.Name}}</title>
+    <title>{{client.id}}.{{application.id}}</title>
 </head>
 <body>
-    <h2>Liste des données de {{ table.Name }} !</h2>
+    <h2>Liste des enregistrements de {{ table.Name }} !</h2>
     <table>
         <tr>
             {# liste des colonnes #}
@@ -20,20 +20,27 @@
         {# liste des lignes #}
         {% for record in records %}
         <tr>
+            {% set ns = namespace(key="") %}
+            {% for index in range(table.Key | length) %}
+            {% if ns.key != "" %}
+            {% set ns.key = ns.key ~ "," %}
+            {% endif %}
+            {% set ns.key = ns.key ~ record[table.Key[index]] %}
+            {% endfor %}
             {% for column in table.Fields %}
             <td>
                 {{record[column]}}
             </td>
             {% endfor %}
             <td>
-                <a href="/update/{{table.Name}}/{{record[table.Key]}}">Modifier</a>
+                <a href="../update/{{table.Name}}/{{ns.key}}">Modifier</a>
             </td>
             <td>
-                <a href="/delete/{{table.Name}}/{{record[table.Key]}}">Supprimer</a>
+                <a href="../delete/{{table.Name}}/{{ns.key}}">Supprimer</a>
             </td>
         </tr>
         {% endfor %}
     </table>
-    <a href="/insert/{{table.Name}}">Ajouter un enregistrement</a>
+    <a href="../insert/{{table.Name}}">Ajouter un enregistrement</a>
 </body>
 </html>

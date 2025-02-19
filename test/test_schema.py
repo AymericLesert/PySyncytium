@@ -23,8 +23,24 @@ configuration = {
 
 class TestDSSchema(unittest.TestCase):
     """This class tests the schema behavior"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Initialization of the test case"""
+        load_dotenv()
+        cls.configuration = DSConfiguration('test/database.yml')
+        cls.log = DSLogger(cls.configuration)
+        cls.log.open()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Close the test case"""
+        cls.log.close()
+
     def setUp(self):
-        self.schema = DSSchema(databasefactory(configuration.items.database), configuration.items.schema).set_user("Test")
+        """Initialize a test"""
+        self.schema = DSSchema(databasefactory(self.__class__.configuration.items.database),
+                               self.__class__.configuration.items.schema).set_user("Test")
 
     def test_01_connection(self):
         """Checks if the schema is read and the connection can be done"""
@@ -115,11 +131,3 @@ class TestDSSchema(unittest.TestCase):
                 print(record)
 
             self.schema.commit()
-
-if __name__ == "__main__":
-    load_dotenv()
-    configuration = DSConfiguration('test/database.yml')
-    log = DSLogger(configuration)
-    log.open()
-    unittest.main()
-    log.close()

@@ -78,12 +78,23 @@ class DSSchemas:
 
             if len(self.__schemas_availables[name]) > 0:
                 self.info(f"Session '{name}' recycled")
-                return DSSchemas.Session(name, self.__schemas_availables.pop())
+                return DSSchemas.Session(name, self.__schemas_availables[name].pop())
 
-            newschema = None
-            if name == "":
-                newschema = DSSchema(databasefactory(self.configuration.items.main.database), self.configuration.items.main.schema)
+            database = None
+            schema = None
 
+            if client is None and application is None:
+                database = self.configuration.items.main.database
+                schema = self.configuration.items.main.schema
+            elif client is not None and application is not None:
+                database = self.configuration.items.clients.get(f"{client}.applications.{application}.database", None)
+                schema = self.configuration.items.clients.get(f"{client}.applications.{application}.schema", None)
+
+            if database is None or schema is None:
+                self.info(f"Session '{name}' unknown")
+                return None
+
+            newschema = DSSchema(databasefactory(database), schema)
             if newschema is None:
                 self.info(f"Session '{name}' unknown")
                 return None

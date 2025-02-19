@@ -18,7 +18,7 @@ from interface.authentication import decrypt_user
 
 # Handle the API routes
 
-app = FastAPI(title=DSLogger.Instance.application,
+app = FastAPI(title=DSLogger.Instance.project,
               description="WebSocket Interface - Permanently connection between server and client application",
               version=DSLogger.Instance.version)
 

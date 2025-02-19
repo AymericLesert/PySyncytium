@@ -3,4 +3,5 @@
 id: C0000001
 name: "Template client"
 
-A0000001: A0000001/application.yml
+applications:
+    A0000001: A0000001/application.yml

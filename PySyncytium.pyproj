@@ -58,9 +58,9 @@
     <Compile Include="logger\logger.py" />
     <Compile Include="logger\__init__.py" />
     <Compile Include="syncytium.py" />
-    <Compile Include="test\configuration.py" />
-    <Compile Include="test\databasemysql.py" />
-    <Compile Include="test\schema.py" />
+    <Compile Include="test\test_configuration.py" />
+    <Compile Include="test\test_databasemysql.py" />
+    <Compile Include="test\test_schema.py" />
     <Compile Include="app\schema\criteria\criteriafactory.py" />
     <Compile Include="app\schema\record.py" />
     <Compile Include="app\schema\criteria\criterialogicalnot.py" />
@@ -107,18 +107,20 @@
     <Content Include="config\main\database.yml" />
     <Content Include="config\main\schema.yml" />
     <Content Include="interface\web\script\chat.js" />
-    <Content Include="interface\web\template\chat.html" />
-    <Content Include="interface\web\template\update.html" />
-    <Content Include="interface\web\template\delete.html" />
-    <Content Include="interface\web\template\insert.html" />
-    <Content Include="interface\web\template\select.html" />
+    <Content Include="interface\web\template\client\chat.html" />
+    <Content Include="interface\web\template\client\index.html" />
+    <Content Include="interface\web\template\main\index.html" />
+    <Content Include="interface\web\template\client\application\update.html" />
+    <Content Include="interface\web\template\client\application\delete.html" />
+    <Content Include="interface\web\template\client\application\insert.html" />
+    <Content Include="interface\web\template\client\application\select.html" />
     <Content Include="interface\web\template\login.html" />
     <Content Include="LICENSE.txt" />
     <Content Include="config.yml" />
     <Content Include="README.md" />
     <Content Include="requirements.txt" />
     <Content Include=".env" />
-    <Content Include="interface\web\template\index.html" />
+    <Content Include="interface\web\template\client\application\index.html" />
     <Content Include="test\database\database.yml" />
     <Content Include="test\database\logging.yml" />
     <Content Include="test\database.yml" />
@@ -128,7 +130,7 @@
     <Content Include="test\database\schema.yml" />
     <Content Include="test\PSTest.sql" />
     <Content Include="VERSION" />
-    <Content Include="APPLICATION" />
+    <Content Include="PROJECT" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -154,9 +156,11 @@
     <Folder Include="interface\websocket\" />
     <Folder Include="interface\web\" />
     <Folder Include="config\" />
+    <Folder Include="interface\web\template\main\" />
+    <Folder Include="interface\web\template\client\application\" />
+    <Folder Include="interface\web\template\client\" />
     <Folder Include="logger\" />
     <Folder Include="configuration\" />
-    <Folder Include="logs\" />
     <Folder Include="exception\" />
     <Folder Include="test\" />
     <Folder Include="app\schema\" />

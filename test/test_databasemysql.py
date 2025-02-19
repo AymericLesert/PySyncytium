@@ -16,6 +16,16 @@ from app.schema.database.databasemysql import DSDatabaseMySQL
 
 class TestDSDatabaseMySQL(unittest.TestCase):
     """This class tests the mysql connection behavior"""
+    @classmethod
+    def setUpClass(cls):
+        """Initialization of the test case"""
+        load_dotenv()
+        cls.log = DSLogger(DSConfiguration('test/database.yml'))
+        cls.log.open()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.log.close()
 
     def test_01_connection(self):
         """Checks if the connection can be done"""
@@ -100,10 +110,3 @@ class TestDSDatabaseMySQL(unittest.TestCase):
 
             for record in db.select("User", ["Name", "Age", "PhoneNumber"]):
                 print(record)
-
-if __name__ == "__main__":
-    load_dotenv()
-    log = DSLogger(DSConfiguration('test/database.yml'))
-    log.open()
-    unittest.main()
-    log.close()

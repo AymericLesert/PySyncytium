@@ -74,8 +74,8 @@ class DSLogger:
             else:
                 self.__logger.info("%s = '%s'", root, items)
 
-        self.__logger.info("Application : %s", self.__configuration.application)
-        self.__logger.info("Version     : %s", self.__configuration.version)
+        self.__logger.info("Project : %s", self.__configuration.project)
+        self.__logger.info("Version : %s", self.__configuration.version)
         self.__logger.info("-------------------------")
         if self.isverbose:
             self.__logger.info("Verbose mode enable")
@@ -101,9 +101,9 @@ class DSLogger:
         return self.__configuration.version
 
     @property
-    def application(self):
-        """Retrieve the current application name"""
-        return self.__configuration.application
+    def project(self):
+        """Retrieve the current project name"""
+        return self.__configuration.project
 
     def open(self):
         """This function opens the current and writes some common informations"""
@@ -241,7 +241,7 @@ class DSLogger:
             try:
                 for line in format_message(user, klass, module, None, message):
                     self.__logger.error(line)
-                for line in format_message(user, klass, module, None, traceback.format_exc()):
+                for line in format_message(user, klass, module, None, traceback.format_exc(chain = False)):
                     self.__logger.error(line)
             except:
                 pass

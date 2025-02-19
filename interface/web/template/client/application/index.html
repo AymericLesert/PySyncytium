@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{client.id}}.{{application.id}}</title>
+</head>
+<body>
+    <h2>Bienvenue {{ user.sub }} !</h2>
+    <p>Liste des tables</p>
+    <ul>
+        {% for table in schema.Tables %}
+        <li><a href="select/{{table}}/">{{table}}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
