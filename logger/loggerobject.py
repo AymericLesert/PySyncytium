@@ -107,5 +107,5 @@ def asyncloggerexecutiontime(func):
             return result
         except:
             DSLogger.Instance.exception(username, func.__name__, __name__, "Error on executing function")
-            return None
+            raise
     return wrapper

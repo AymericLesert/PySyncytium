@@ -10,6 +10,10 @@ from logger.loggerobject import DSLoggerObject
 class DSDatabase(DSLoggerObject):
     """This abstract class describes the main functions from a database connexion"""
 
+    def to_dict(self):
+        """Retrieves the database instance into a dictionary"""
+        return {}
+
     def connect(self):
         """This abstract method describes the connection to the database"""
         return self
@@ -23,6 +27,10 @@ class DSDatabase(DSLoggerObject):
     def schema(self):
         """Retrieve a JSON description of the tables from a given schema"""
         return {}
+
+    def migrate(self, schema, database, allprivileges):
+        """Create or upgrade a schema from the json description"""
+        return False
 
     def insert(self, tablename, fields, values):
         """Return the list of values inserted into a table"""

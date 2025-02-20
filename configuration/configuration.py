@@ -14,6 +14,8 @@ from configuration.configurationitem import DSConfigurationItem
 class DSConfiguration:
     """This class stores the configuration of the current application"""
 
+    EMPTY = None
+
     @property
     def items(self):
         """
@@ -28,9 +30,16 @@ class DSConfiguration:
         return "v" + self._get_content_file("VERSION")
 
     @property
-    def application(self):
+    def project(self):
         """Retrieve the current application name"""
-        return self._get_content_file("APPLICATION")
+        return self._get_content_file("PROJECT")
+
+    @property
+    def empty(self):
+        """Retrieves an empty configuration"""
+        if DSConfiguration.EMPTY is None:
+            DSConfiguration.EMPTY = DSConfiguration()
+        return DSConfiguration.EMPTY
 
     def to_dict(self):
         """Retrieve the configuration items without evaluation"""
@@ -82,6 +91,8 @@ class DSConfiguration:
         """
         return self.__items.get(key, default_value)
 
-    def __init__(self, filename):
-        self.__configuration = self._load(filename)
+    def __init__(self, filename = None):
+        self.__configuration = {}
+        if filename is not None:
+            self.__configuration = self._load(filename)
         self.__items = DSConfigurationItem(self, self.__configuration)

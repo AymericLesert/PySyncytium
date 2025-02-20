@@ -54,13 +54,23 @@ class DSConfigurationItem:
                     items[key] = self.__evaluate(value)
         return items
 
+    def __getattr__(self, name):
+        if name in self.__items:
+            return self.__evaluate(self.__items[name])
+        raise KeyError(f"Field '{name}' not found in record.")
+
+    def __getitem__(self, name):
+        if name in self.__items:
+            return self.__evaluate(self.__items[name])
+        raise KeyError(f"Field '{name}' not found in record.")
+
     def __evaluate(self, value):
         """This function replaces the substitution strings into a field from the configuration.
 
         The format of this kind of string is '${KEY}' or '${KEY?DefaultValue}
 
         Where KEY can be another configuration item (.item.subitem from the root, or item.subitem from the current item)
-              KEY can be a keyword (VERSION or APPLICATION)
+              KEY can be a keyword (VERSION or PROJECT)
               KEY can be an environment variable
 
         The character '?' means that if the KEY doesn't exist the default value replace it.
@@ -90,9 +100,9 @@ class DSConfigurationItem:
                 except:
                     pass
                 return value
-            if key == 'APPLICATION':
+            if key == 'PROJECT':
                 try:
-                    value = self.root.application
+                    value = self.root.project
                 except:
                     pass
                 return value
@@ -144,6 +154,8 @@ class DSConfigurationItem:
         Retrieve a value from a key, describing a path of a value from the current item
         if the key doesn't exist, the default value is retrieved
         """
+        if key is None:
+            return default_value
         item = self
         for itemkey in key.split('.'):
             try:
@@ -163,16 +175,6 @@ class DSConfigurationItem:
                         except:
                             return default_value
         return self.__evaluate(item)
-
-    def __getattr__(self, name):
-        if name in self.__items:
-            return self.__evaluate(self.__items[name])
-        raise KeyError(f"Field '{name}' not found in record.")
-
-    def __getitem__(self, name):
-        if name in self.__items:
-            return self.__evaluate(self.__items[name])
-        raise KeyError(f"Field '{name}' not found in record.")
 
     def __init__(self, root, item):
         def subitem(root, item):

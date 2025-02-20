@@ -1,40 +1,34 @@
 # PySyncytium
 
-## Démarrage de l'API
+## DÃ©marrage de l'API
 
 ```
-cd PySyncytium
+cd PySyncytium\workspace
 env\Script\activate
 python syncytium.py --name api
-or
-fastapi dev interface\api\api.py
 ```
 
-## Démarrage du front HTML
+## DÃ©marrage du front HTML
 
 ```
-cd PySyncytium
+cd PySyncytium\workspace
 env\Script\activate
 python syncytium.py --name web
-or
-uvicorn interface.web.web:app --reload --port 8080
 ```
 
-## Démarrage du serveur WebSocket
+## DÃ©marrage du serveur WebSocket
 
 ```
-cd PySyncytium
+cd PySyncytium\workspace
 env\Script\activate
 python syncytium.py --name websocket
-or
-uvicorn interface.websocket.websocket:app --reload --port 8081
 ```
 
-## Démarrage des tests unitaires
+## DÃ©marrage des tests unitaires
 
 ```
-cd PySyncytium
+cd PySyncytium\workspace
 env\Script\activate
-python -m test.configuration
+python -m unittest -v
 ```
 

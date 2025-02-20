@@ -2,5 +2,5 @@
 
 logging: config/logging.yml
 interface: config/interface.yml
-root: config/root.yml
+main: config/main.yml
 clients: config/clients.yml

@@ -5,65 +5,62 @@ This module handles the authentication mode
 """
 
 import datetime
-import os
+import hashlib
 
 import jwt
-from fastapi import HTTPException, Security, Cookie
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import HTTPException
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "mysecret")
-ALGORITHM = "HS256"
+from interface.schemas import DSSchemas
 
 # Handle the authentification user
 # ---------------------------------
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
-
-fake_users_db = {
-    "test": {
-        "username": "test",
-        "password": "password",  # ⚠️ Remplace cela par un hash sécurisé en production
-        "client": "templateclient"
-    }
-}
-
-def create_access_token(data: dict, expires_delta: int = 30):
+def create_access_token(data, configuration):
     """Create a JWT Token containing current information of a new valid session"""
     to_encode = data.copy()
-    expire = datetime.datetime.utcnow() + datetime.timedelta(minutes=expires_delta)
+    expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=configuration.jwt.expires)
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, configuration.jwt.secret_key, algorithm=configuration.jwt.algorithm)
 
-def new_token(username, password):
-    """Génère un token pour un utilisateur"""
-    user = fake_users_db.get(username)
-    if not user or user["password"] != password:
-        raise HTTPException(status_code=400, detail="Invalid username or password")
-    return {
-        "access_token": create_access_token({"sub": username, "schema": user["schema"]}), 
-        "token_type": "bearer"
-        }
+def new_token(interface, username, password, configuration):
+    """Generate a token to a given user"""
+    with DSSchemas().get_session() as schema:
+        with schema:
+            users = list(schema.User.select(lambda record : (record.Interface == interface) &
+                                                            (record.Login == username)))
+            if len(users) == 0:
+                raise HTTPException(status_code=400, detail="Invalid username or password")
 
-def decrypt_user(token = None, access_token = None):
+            h = hashlib.new(configuration.password.algorithm)
+            h.update(password.encode(configuration.password.encoding))
+            password = h.hexdigest()
+
+            if users[0].Password != password:
+                raise HTTPException(status_code=400, detail="Invalid username or password")
+
+            client = None
+            clients = list(schema.Client.select(lambda record : record.Id == users[0].ClientId))
+            if len(clients) > 0:
+                client = clients[0].Name
+
+            return {
+                "access_token": create_access_token({
+                    "sub": username, 
+                    "client": client
+                    }, configuration),
+                "token_type": "bearer"
+                }
+
+def decrypt_user(token, access_token, configuration):
     """Retrieve user profile authenticated"""
-    # pylint: disable=raise-missing-from
     token = token or access_token  # Utilise l'en-tête si dispo, sinon le cookie
     if not token:
         raise HTTPException(status_code=401, detail="Missing token")
     try:
-        payload = jwt.decode(token.replace("Bearer ", ""), SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-def decrypt_user_api(token = Security(oauth2_scheme)):
-    """Retrieve user profile"""
-    return decrypt_user(token = token)
-
-def decrypt_user_web(access_token = Cookie(None)):
-    """Retrieve user profile"""
-    if access_token is None:
-        return None
-    return decrypt_user(access_token = access_token)
+        return jwt.decode(token.replace("Bearer ", ""),
+                          configuration.jwt.secret_key,
+                          algorithms=[configuration.jwt.algorithm])
+    except jwt.ExpiredSignatureError as exc:
+        raise HTTPException(status_code=401, detail="Token expired") from exc
+    except jwt.InvalidTokenError as exc:
+        raise HTTPException(status_code=401, detail="Invalid token") from exc

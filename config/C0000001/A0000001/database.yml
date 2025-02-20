@@ -1,0 +1,11 @@
+# Database configuration for the application
+# TODO : These items must be secret ...
+# TODO : Build APP_DATABASE_USERNAME and APP_DATABASE_PASSWORD
+
+class: MySQL
+
+parameters:
+  hostname: "localhost"
+  username: ${PSTEST_DATABASE_USERNAME}
+  password*: ${PSTEST_DATABASE_PASSWORD}
+  schema: "PSTest"

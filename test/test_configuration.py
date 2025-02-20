@@ -12,6 +12,10 @@ from configuration.configuration import DSConfiguration
 
 class TestDSConfiguration(unittest.TestCase):
     """This class tests the configuration behavior"""
+    @classmethod
+    def setUpClass(cls):
+        """Initialization of the test case"""
+        load_dotenv()
 
     def setUp(self):
         """Initialization of the configuration items"""
@@ -32,8 +36,8 @@ class TestDSConfiguration(unittest.TestCase):
                                          },
                                      "cleanup": {
                                          "interval": 86400,
-                                         "directory": "${SYNCYTIUM_LOG_DIRECTORY}",
-                                         "pattern": "^${APPLICATION}-.*\\.log$",
+                                         "directory": "${PSLOG_DIRECTORY}",
+                                         "pattern": "^${PROJECT}-.*\\.log$",
                                          "nbdays": 20
                                          },
                                      "loggers": ["fastapi", "uvicorn"]
@@ -54,7 +58,7 @@ class TestDSConfiguration(unittest.TestCase):
                                          "class": "logging.handlers.RotatingFileHandler",
                                          "level": "DEBUG",
                                          "formatter": "standard",
-                                         "filename": "${SYNCYTIUM_LOG_DIRECTORY}/${APPLICATION}-${date:%Y-%m-%d}.log",
+                                         "filename": "${PSLOG_DIRECTORY}/${PROJECT}-${date:%Y-%m-%d}.log",
                                          "maxBytes": 16777216,
                                          "backupCount": 10,
                                          "encoding": "utf8"
@@ -86,8 +90,8 @@ class TestDSConfiguration(unittest.TestCase):
                                          },
                                      "cleanup": {
                                          "interval": 86400,
-                                         "directory": "logs",
-                                         "pattern": "^" + self.configuration.application + "-.*\\.log$",
+                                         "directory": "../logs",
+                                         "pattern": "^" + self.configuration.project + "-.*\\.log$",
                                          "nbdays": 20
                                          },
                                      "loggers": ["fastapi", "uvicorn"]
@@ -108,8 +112,8 @@ class TestDSConfiguration(unittest.TestCase):
                                          "class": "logging.handlers.RotatingFileHandler",
                                          "level": "DEBUG",
                                          "formatter": "standard",
-                                         "filename": "logs/" +
-                                                        self.configuration.application +
+                                         "filename": "../logs/" +
+                                                        self.configuration.project +
                                                         "-" +
                                                         datetime.datetime.now().strftime("%Y-%m-%d") +
                                                         ".log",
@@ -139,11 +143,7 @@ class TestDSConfiguration(unittest.TestCase):
         self.assertEqual(self.configuration.items.database.username, "root")
         self.assertEqual(self.configuration.get("database.username", None), "root")
         self.assertEqual(self.configuration.get("database.unknown", "#NA"), "#NA")
-        self.assertEqual(self.configuration.application, "Syncytium")
+        self.assertEqual(self.configuration.project, "Syncytium")
         self.assertRegex(self.configuration.version, r"^v[0-9]+(\.[0-9]+)*$")
         with self.assertRaises(KeyError):
             _ = self.configuration.items.database.unknown
-
-if __name__ == "__main__":
-    load_dotenv()
-    unittest.main()

@@ -1,7 +1,7 @@
-# Description of the main database
+# Schema description of the current of the application
 
-Name: Syncytium
-Description: "Modéle de données de l'application principale"
+Name: PSTest
+Description: "Modéle de données de l'application 1 du client 1"
 
 Tables:
   User:

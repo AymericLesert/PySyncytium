@@ -103,7 +103,7 @@ class DSTable(DSLoggerObject):
                 self.verbose(f"Deleting {len(values)} records into the table '{self.__schema.name}.{self.name}' ...")
             else:
                 self.verbose(f"Deleting a record into the table '{self.__schema.name}.{self.name}' ...")
-        return self.__schema.database.delete(self.name, self.fields, values)
+        return self.__schema.database.delete(self.name, self.key, values)
 
     def __getattr__(self, name):
         return self.__fields[name]
@@ -113,7 +113,6 @@ class DSTable(DSLoggerObject):
 
     def __iter__(self):
         if self.__cursor is not None:
-            self.__cursor.close()
             self.__cursor = None
             self.__iterator = None
 
@@ -135,11 +134,13 @@ class DSTable(DSLoggerObject):
         self.__name = tablename
         self.__description = description['Description']
         self.__key = description['Key']
-
         self.__cursor = None
         self.__iterator = None
-
         self.__fields = {}
+
+        if isinstance(self.__key, str):
+            self.__key = [self.__key]
+
         fields = description['Fields']
         for key in fields.keys():
             # TODO: check if the fieldtype is only a word (use a factory)

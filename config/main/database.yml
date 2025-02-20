@@ -1,0 +1,9 @@
+# Main database connection
+
+class: MySQL
+
+parameters:
+  hostname: "localhost"
+  username: "${PSROOT_DATABASE_USERNAME}"
+  password*: ${PSROOT_DATABASE_PASSWORD}
+  schema: "PSRoot"

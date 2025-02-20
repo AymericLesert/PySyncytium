@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Administration</title>
+</head>
+<body>
+    <h2>Création d'un enregistrement de {{ table.Name }}</h2>
+    <form action="/insert/{{table.Name}}" method="post">
+        {% for field in table.Fields %}
+        <label for="{{field}}">{{table.Fields[field].Name}} ({{table.Fields[field].Description}}) :</label>
+        <input type="text" id="{{field}}" name="{{field}}">
+        {% endfor %}
+        <button type="submit">Créer</button>
+        <input type="button" value="Cancel" onclick="history.go(-1)" />
+    </form>
+</body>
+</html>

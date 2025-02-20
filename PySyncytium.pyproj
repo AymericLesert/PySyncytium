@@ -15,6 +15,7 @@
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <EnableNativeCodeDebugging>True</EnableNativeCodeDebugging>
     <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
+    <TestFramework>unittest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,8 +46,8 @@
     <Compile Include="app\schema\database\databasemysql.py" />
     <Compile Include="app\schema\database\database.py" />
     <Compile Include="app\schema\database\__init__.py" />
+    <Compile Include="interface\schemas.py" />
     <Compile Include="interface\websocket\websocket.py" />
-    <Compile Include="interface\db.py" />
     <Compile Include="interface\__init__.py" />
     <Compile Include="interface\websocket\__init__.py" />
     <Compile Include="interface\web\public\login.css">
@@ -58,9 +59,9 @@
     <Compile Include="logger\logger.py" />
     <Compile Include="logger\__init__.py" />
     <Compile Include="syncytium.py" />
-    <Compile Include="test\configuration.py" />
-    <Compile Include="test\databasemysql.py" />
-    <Compile Include="test\schema.py" />
+    <Compile Include="test\test_configuration.py" />
+    <Compile Include="test\test_databasemysql.py" />
+    <Compile Include="test\test_schema.py" />
     <Compile Include="app\schema\criteria\criteriafactory.py" />
     <Compile Include="app\schema\record.py" />
     <Compile Include="app\schema\criteria\criterialogicalnot.py" />
@@ -92,33 +93,39 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include=".pylintrc" />
-    <Content Include="config\root\smtp.yml" />
-    <Content Include="config\templateclient\templateapplication\smtp.yml" />
-    <Content Include="config\templateclient\templateclient.yml" />
-    <Content Include="config\templateclient\templateapplication\application.yml" />
-    <Content Include="config\templateclient\templateapplication\database.yml" />
-    <Content Include="config\templateclient\templateapplication\schema.yml" />
-    <Content Include="config\root.yml" />
+    <Content Include="config\main\smtp.yml" />
+    <Content Include="config\C0000001\A0000001\smtp.yml" />
+    <Content Include="config\C0000001\client.yml" />
+    <Content Include="config\C0000001\A0000001\application.yml" />
+    <Content Include="config\C0000001\A0000001\database.yml" />
+    <Content Include="config\C0000001\A0000001\schema.yml" />
+    <Content Include="config\main.yml" />
     <Content Include="config\clients.yml" />
     <Content Include="config\interface\websocket.yml" />
     <Content Include="config\interface\web.yml" />
     <Content Include="config\interface\api.yml" />
     <Content Include="config\interface.yml" />
-    <Content Include="config\root\database.yml" />
-    <Content Include="config\root\schema.yml" />
+    <Content Include="config\main\database.yml" />
+    <Content Include="config\main\schema.yml" />
     <Content Include="interface\web\script\chat.js" />
-    <Content Include="interface\web\template\chat.html" />
-    <Content Include="interface\web\template\update.html" />
-    <Content Include="interface\web\template\delete.html" />
-    <Content Include="interface\web\template\insert.html" />
-    <Content Include="interface\web\template\select.html" />
+    <Content Include="interface\web\template\client\chat.html" />
+    <Content Include="interface\web\template\client\index.html" />
+    <Content Include="interface\web\template\main\delete.html" />
+    <Content Include="interface\web\template\main\index.html" />
+    <Content Include="interface\web\template\client\application\update.html" />
+    <Content Include="interface\web\template\client\application\delete.html" />
+    <Content Include="interface\web\template\client\application\insert.html" />
+    <Content Include="interface\web\template\client\application\select.html" />
     <Content Include="interface\web\template\login.html" />
+    <Content Include="interface\web\template\main\insert.html" />
+    <Content Include="interface\web\template\main\select.html" />
+    <Content Include="interface\web\template\main\update.html" />
     <Content Include="LICENSE.txt" />
     <Content Include="config.yml" />
     <Content Include="README.md" />
     <Content Include="requirements.txt" />
     <Content Include=".env" />
-    <Content Include="interface\web\template\index.html" />
+    <Content Include="interface\web\template\client\application\index.html" />
     <Content Include="test\database\database.yml" />
     <Content Include="test\database\logging.yml" />
     <Content Include="test\database.yml" />
@@ -126,8 +133,9 @@
     <Content Include="test\configuration\database.yml" />
     <Content Include="test\configuration\logging.yml" />
     <Content Include="test\database\schema.yml" />
+    <Content Include="test\PSTest.sql" />
     <Content Include="VERSION" />
-    <Content Include="APPLICATION" />
+    <Content Include="PROJECT" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -142,10 +150,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="app\service\" />
-    <Folder Include="config\templateclient\" />
-    <Folder Include="config\templateclient\templateapplication\" />
+    <Folder Include="config\C0000001\" />
+    <Folder Include="config\C0000001\A0000001\" />
     <Folder Include="config\interface\" />
-    <Folder Include="config\root\" />
+    <Folder Include="config\main\" />
     <Folder Include="app\" />
     <Folder Include="app\schema\database\" />
     <Folder Include="interface\api\" />
@@ -153,9 +161,11 @@
     <Folder Include="interface\websocket\" />
     <Folder Include="interface\web\" />
     <Folder Include="config\" />
+    <Folder Include="interface\web\template\main\" />
+    <Folder Include="interface\web\template\client\application\" />
+    <Folder Include="interface\web\template\client\" />
     <Folder Include="logger\" />
     <Folder Include="configuration\" />
-    <Folder Include="logs\" />
     <Folder Include="exception\" />
     <Folder Include="test\" />
     <Folder Include="app\schema\" />

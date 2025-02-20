@@ -1,9 +1,0 @@
-# Main database connection
-
-class: MySQL
-
-parameters:
-  hostname: "localhost"
-  username: "${ROOT_DATABASE_USERNAME}"
-  password*: ${ROOT_DATABASE_PASSWORD}
-  schema: "Syncytium"

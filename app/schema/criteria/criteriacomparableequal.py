@@ -24,4 +24,6 @@ class DSCriteriaComparableEqual(DSCriteriaComparable):
 
     def tomysql(self):
         """Convert the criteria to a SQL String compatible to MySQL Database"""
+        if self.fieldvalue is None:
+            return f"`{self.fieldname}` is null"
         return f"`{self.fieldname}` = {self.fieldvalue}"

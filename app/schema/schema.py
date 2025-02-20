@@ -34,6 +34,11 @@ class DSSchema(DSLoggerObject):
         return self.__description
 
     @property
+    def version(self):
+        """Version of the schema"""
+        return self.__version
+
+    @property
     def tables(self):
         """List of table name"""
         return list(self.__tables.keys())
@@ -66,6 +71,20 @@ class DSSchema(DSLoggerObject):
         self.verbose("Rollbacking transaction ...")
         self.__database.rollback()
 
+    def migrate(self, schema = None):
+        """
+        Create or upgrade a schema towards a new version
+        * True if the schema is upgrading
+        * False if no changes has done
+        The current schema should be the main instance because the right is higher (root)
+        """
+        allprivileges = False
+        if schema is None:
+            schema = self
+            allprivileges = True
+        self.verbose(f"Migrating the schema '{schema.name}' ...")
+        return self.__database.migrate(schema.to_dict(), schema.database.to_dict(), allprivileges)
+
     def __getattr__(self, name):
         return self.__tables[name]
 
@@ -79,8 +98,10 @@ class DSSchema(DSLoggerObject):
         self.__database.__exit__()
 
     def __init__(self, database, schema):
+        super().__init__()
         self.__name = schema['Name']
         self.__description = schema.get('Description', '')
+        self.__version = schema.get('Version', 0)
         self.__tables = {}
         self.__database = database
 

@@ -3,7 +3,7 @@
 class: MySQL
 
 parameters:
-  hostname: "${ROOT_DATABASE_HOSTNAME?localhost}"
-  username: "${ROOT_DATABASE_USERNAME}"
-  password*: ${ROOT_DATABASE_PASSWORD}
-  schema: "Syncytium"
+  hostname: "${PSTEST_DATABASE_HOSTNAME?localhost}"
+  username: "${PSTEST_DATABASE_USERNAME}"
+  password*: ${PSTEST_DATABASE_PASSWORD}
+  schema: "PSTest"

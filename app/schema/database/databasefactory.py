@@ -8,7 +8,6 @@ from .databasemysql import DSDatabaseMySQL
 def factory(configuration):
     """Create a database instance"""
     databases = { "MySQL" : DSDatabaseMySQL }
-    
     klass = configuration.get('class', 'MySQL')
     if klass not in databases:
         raise DSExceptionDatabaseUnknown(f"Database '{klass}' not known")
