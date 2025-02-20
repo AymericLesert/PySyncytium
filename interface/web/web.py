@@ -120,6 +120,10 @@ async def get_home(request : Request,
                                             "client": client.to_dict()
                                         })
 
+# ---------------------
+# Home page of a client
+# ---------------------
+
 @app.get("/{application}/index.html", response_class=HTMLResponse)
 @asyncloggerexecutiontime
 async def get_application(application : str,
@@ -355,3 +359,174 @@ async def get_chat(request : Request,
                                           "request": request,
                                           "user": user
                                       })
+
+# -------------------------------
+# Home page of the administration
+# -------------------------------
+
+@app.get("/insert/{table}", response_class=HTMLResponse)
+@asyncloggerexecutiontime
+async def get_table_insert(table : str,
+                           request : Request,
+                           user = Depends(decrypt_user_web)):
+    """Access to the page creating a new record"""
+    if user is None:
+        return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
+
+    with DSSchemas().get_session() as schema:
+        return templates.TemplateResponse("main/insert.html",
+                                          {
+                                              "request": request,
+                                              "user": user,
+                                              "projet": DSSchemas().configuration.project,
+                                              "version": DSSchemas().configuration.version,
+                                              "schema": schema.to_dict(),
+                                              "table": schema[table].to_dict()
+                                          })
+
+@app.post("/insert/{table}", response_class=HTMLResponse)
+@asyncloggerexecutiontime
+async def post_table_insert(table : str,
+                            request : Request,
+                            user = Depends(decrypt_user_web)):
+    """Insert a new record to the database"""
+    if user is None:
+        raise HTTPException(status_code=400, detail="Not authenticated")
+    record = await request.form()
+    with DSSchemas().get_session() as schema:
+        with schema:
+            schema[table].insert(schema[table].new(dict(record)))
+            schema.commit()
+    return RedirectResponse(url=f"/select/{table}", status_code=303)
+
+@app.get("/select/{table}", response_class=HTMLResponse)
+@asyncloggerexecutiontime
+async def get_table_select(table : str,
+                           request : Request,
+                           user = Depends(decrypt_user_web)):
+    """Access to the page showing the list of records"""
+    if user is None:
+        return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
+
+    with DSSchemas().get_session() as schema:
+        records = []
+        with schema:
+            for record in schema[table]:
+                records.append(record.to_dict())
+        return templates.TemplateResponse("main/select.html",
+                                          {
+                                              "request": request,
+                                              "user": user,
+                                              "projet": DSSchemas().configuration.project,
+                                              "version": DSSchemas().configuration.version,
+                                              "schema": schema.to_dict(),
+                                              "table": schema[table].to_dict(),
+                                              "records": records
+                                          })
+
+@app.get("/update/{table}/{keys}", response_class=HTMLResponse)
+@asyncloggerexecutiontime
+async def get_table_update(table : str,
+                           keys : str,
+                           request : Request,
+                           user = Depends(decrypt_user_web)):
+    """Access to the page updating an existing record"""
+    if user is None:
+        return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
+
+    with DSSchemas().get_session() as schema:
+        records = []
+        with schema:
+            clause = [DSCriteriaLogicalAnd.SIGN,
+                      [
+                          [DSCriteriaComparableEqual.SIGN, key, value]
+                          for key, value in zip(schema[table].key, keys.split(","))
+                          ]
+                      ]
+            for record in schema[table].select(lambda t : criteriafactory(clause, t)):
+                records.append(record.to_dict())
+        return templates.TemplateResponse("main/update.html",
+                                          {
+                                              "request": request,
+                                              "user": user,
+                                              "projet": DSSchemas().configuration.project,
+                                              "version": DSSchemas().configuration.version,
+                                              "schema": schema.to_dict(),
+                                              "table": schema[table].to_dict(),
+                                              "record": records[0],
+                                              "keys": keys
+                                          })
+
+@app.post("/update/{table}/{keys}", response_class=HTMLResponse)
+@asyncloggerexecutiontime
+async def post_table_update(table : str,
+                            keys : str,
+                            request : Request,
+                            user = Depends(decrypt_user_web)):
+    """Update an existing record to the database"""
+    if user is None:
+        raise HTTPException(status_code=400, detail="Not authenticated")
+    newrecord = await request.form()
+    records = []
+    with DSSchemas().get_session() as schema:
+        with schema:
+            clause = [DSCriteriaLogicalAnd.SIGN,
+                      [
+                          [DSCriteriaComparableEqual.SIGN, key, value]
+                          for key, value in zip(schema[table].key, keys.split(","))
+                          ]
+                      ]
+            for oldrecord in schema[table].select(lambda t : criteriafactory(clause, t)):
+                records.append(oldrecord.clone())
+            schema[table].update(records[0], schema[table].new(dict(newrecord)))
+            schema.commit()
+    return RedirectResponse(url=f"/select/{table}", status_code=303)
+
+@app.get("/delete/{table}/{keys}", response_class=HTMLResponse)
+@asyncloggerexecutiontime
+async def get_table_delete(table : str,
+                           keys : str,
+                           request : Request,
+                           user = Depends(decrypt_user_web)):
+    """Access to the page deleting an existing record"""
+    if user is None:
+        return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
+
+    with DSSchemas().get_session() as schema:
+        records = []
+        with schema:
+            clause = [DSCriteriaLogicalAnd.SIGN,
+                      [
+                          [DSCriteriaComparableEqual.SIGN, key, value]
+                          for key, value in zip(schema[table].key, keys.split(","))
+                          ]
+                      ]
+            for record in schema[table].select(lambda t : criteriafactory(clause, t)):
+                records.append(record.to_dict())
+        return templates.TemplateResponse("main/delete.html",
+                                          {
+                                              "request": request,
+                                              "user": user,
+                                              "projet": DSSchemas().configuration.project,
+                                              "version": DSSchemas().configuration.version,
+                                              "schema": schema.to_dict(),
+                                              "table": schema[table].to_dict(),
+                                              "record": records[0],
+                                              "keys": keys
+                                          })
+
+@app.post("/delete/{table}/{keys}", response_class=HTMLResponse)
+@asyncloggerexecutiontime
+async def post_table_delete(table : str,
+                            keys : str,
+                            request : Request,
+                            user = Depends(decrypt_user_web)):
+    """Delete an existing record to the database"""
+    if user is None:
+        raise HTTPException(status_code=400, detail="Not authenticated")
+    record = await request.form()
+    with DSSchemas().get_session() as schema:
+        with schema:
+            schema[table].delete(schema[table].new(dict(record)))
+            schema.commit()
+    return RedirectResponse(url=f"/select/{table}", status_code=303)

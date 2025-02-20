@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{client.id}}.{{application.id}}</title>
+    <title>Administration</title>
 </head>
 <body>
     <h2>Liste des enregistrements de {{ table.Name }} !</h2>
@@ -33,15 +33,15 @@
             </td>
             {% endfor %}
             <td>
-                <a href="../update/{{table.Name}}/{{ns.key}}">Modifier</a>
+                <a href="/update/{{table.Name}}/{{ns.key}}">Modifier</a>
             </td>
             <td>
-                <a href="../delete/{{table.Name}}/{{ns.key}}">Supprimer</a>
+                <a href="/delete/{{table.Name}}/{{ns.key}}">Supprimer</a>
             </td>
         </tr>
         {% endfor %}
     </table>
-    <a href="../insert/{{table.Name}}">Ajouter un enregistrement</a>
-    <a href="../index.html">Liste des tables</a>
+    <a href="/insert/{{table.Name}}">Ajouter un enregistrement</a>
+    <a href="/">Liste des tables</a>
 </body>
 </html>

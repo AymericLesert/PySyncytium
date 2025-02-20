@@ -15,6 +15,7 @@
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <EnableNativeCodeDebugging>True</EnableNativeCodeDebugging>
     <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
+    <TestFramework>unittest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -109,12 +110,16 @@
     <Content Include="interface\web\script\chat.js" />
     <Content Include="interface\web\template\client\chat.html" />
     <Content Include="interface\web\template\client\index.html" />
+    <Content Include="interface\web\template\main\delete.html" />
     <Content Include="interface\web\template\main\index.html" />
     <Content Include="interface\web\template\client\application\update.html" />
     <Content Include="interface\web\template\client\application\delete.html" />
     <Content Include="interface\web\template\client\application\insert.html" />
     <Content Include="interface\web\template\client\application\select.html" />
     <Content Include="interface\web\template\login.html" />
+    <Content Include="interface\web\template\main\insert.html" />
+    <Content Include="interface\web\template\main\select.html" />
+    <Content Include="interface\web\template\main\update.html" />
     <Content Include="LICENSE.txt" />
     <Content Include="config.yml" />
     <Content Include="README.md" />

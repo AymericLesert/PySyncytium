@@ -67,6 +67,9 @@ def query_string_api(application: str = None,
     if query is not None:
         query = json.loads(query)
 
+    if (user["client"] is None) != (application is None):
+        raise HTTPException(status_code=405, detail="Not allowed !")
+
     with DSSchemas().get_session(user["client"], application) as schema:
         dsoldrecord = convert(schema, oldrecord)
         dsnewrecord = convert(schema, newrecord)
@@ -110,7 +113,7 @@ async def get_profil(user = Depends(decrypt_user_api)):
 @asyncloggerexecutiontime
 async def insert(request = Depends(query_string_api)):
     """
-    Create a new record into a table :
+    Create a new record into an administration table :
     * oldrecord is ignored
     """
     with DSSchemas().get_session(request.client, request.application) as schema:
@@ -124,7 +127,7 @@ async def insert(request = Depends(query_string_api)):
 @asyncloggerexecutiontime
 async def select(request = Depends(query_string_api)):
     """
-    Select a list of records from a table
+    Select a list of records from an administration table
     * query : describes a filter on the list of records 
     
     Example : ['=', 'Name', 'Tutu'] => List of records having 'Name' = 'Tutu'
@@ -145,7 +148,7 @@ async def select(request = Depends(query_string_api)):
 @asyncloggerexecutiontime
 async def update(request = Depends(query_string_api)):
     """
-    Update an existing record within a new record into a table
+    Update an existing record within a new record into an administration table
     * oldrecord has to match the record to update
     * newrecord has to contain the fields to update
     """
@@ -162,7 +165,7 @@ async def update(request = Depends(query_string_api)):
 @asyncloggerexecutiontime
 async def delete(request = Depends(query_string_api)):
     """
-    Delete an existing record from a table
+    Delete an existing record from an administration table
     """
     with DSSchemas().get_session(request.client, request.application) as schema:
         with schema:
