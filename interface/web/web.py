@@ -366,7 +366,7 @@ async def get_chat(request : Request,
 
 @app.get("/insert/{table}", response_class=HTMLResponse)
 @asyncloggerexecutiontime
-async def get_table_insert(table : str,
+async def get_admin_table_insert(table : str,
                            request : Request,
                            user = Depends(decrypt_user_web)):
     """Access to the page creating a new record"""
@@ -386,7 +386,7 @@ async def get_table_insert(table : str,
 
 @app.post("/insert/{table}", response_class=HTMLResponse)
 @asyncloggerexecutiontime
-async def post_table_insert(table : str,
+async def post_admin_table_insert(table : str,
                             request : Request,
                             user = Depends(decrypt_user_web)):
     """Insert a new record to the database"""
@@ -401,7 +401,7 @@ async def post_table_insert(table : str,
 
 @app.get("/select/{table}", response_class=HTMLResponse)
 @asyncloggerexecutiontime
-async def get_table_select(table : str,
+async def get_admin_table_select(table : str,
                            request : Request,
                            user = Depends(decrypt_user_web)):
     """Access to the page showing the list of records"""
@@ -426,7 +426,7 @@ async def get_table_select(table : str,
 
 @app.get("/update/{table}/{keys}", response_class=HTMLResponse)
 @asyncloggerexecutiontime
-async def get_table_update(table : str,
+async def get_admin_table_update(table : str,
                            keys : str,
                            request : Request,
                            user = Depends(decrypt_user_web)):
@@ -459,7 +459,7 @@ async def get_table_update(table : str,
 
 @app.post("/update/{table}/{keys}", response_class=HTMLResponse)
 @asyncloggerexecutiontime
-async def post_table_update(table : str,
+async def post_admin_table_update(table : str,
                             keys : str,
                             request : Request,
                             user = Depends(decrypt_user_web)):
@@ -484,7 +484,7 @@ async def post_table_update(table : str,
 
 @app.get("/delete/{table}/{keys}", response_class=HTMLResponse)
 @asyncloggerexecutiontime
-async def get_table_delete(table : str,
+async def get_admin_table_delete(table : str,
                            keys : str,
                            request : Request,
                            user = Depends(decrypt_user_web)):
@@ -517,7 +517,7 @@ async def get_table_delete(table : str,
 
 @app.post("/delete/{table}/{keys}", response_class=HTMLResponse)
 @asyncloggerexecutiontime
-async def post_table_delete(table : str,
+async def post_admin_table_delete(table : str,
                             keys : str,
                             request : Request,
                             user = Depends(decrypt_user_web)):
