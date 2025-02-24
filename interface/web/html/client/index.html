@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{client.Name}}</title>
+        <script type="module" src="/script/psmain.js"></script>
+    </head>
+    <body>
+        <h1>Bienvenue {{ user.sub }} !</h1>
+        <h2>Liste des applications</h2>
+        <ul>
+            {% for application in client.applications %}
+            <ps-gui-application ps-id="{{application}}"
+                                ps-name="Application {{application}}">
+            </ps-gui-application>
+            {% endfor %}
+            <ps-gui-application ps-id="chat"
+                                ps-name="Application Chat">
+            </ps-gui-application>
+        </ul>
+    </body>
+</html>

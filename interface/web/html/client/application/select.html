@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{client.id}}.{{application.id}}</title>
+        <script type="module" src="/script/psmain.js"></script>
+    </head>
+    <body>
+        {% set ns = namespace(columns="") %}
+        {% for column in table.Fields %}
+        {% if ns.columns != "" %}
+        {% set ns.columns = ns.columns ~ "," %}
+        {% endif %}
+        {% set ns.columns = ns.columns ~ column %}
+        {% endfor %}
+        {% set ns.key = "" %}
+        {% for index in range(table.Key | length) %}
+        {% if ns.key != "" %}
+        {% set ns.key = ns.key ~ "," %}
+        {% endif %}
+        {% set ns.key = ns.key ~ table.Key[index] %}
+        {% endfor %}
+        <h2>Liste des enregistrements de {{ table.Name }} !</h2>
+
+        <ps-gui-table ps-id="{{table.Name}}" ps-columns="{{ns.columns}}" ps-keys="{{ns.key}}">
+            {% for record in records %}
+                {% set ns.values = "" %}
+                {% for column in table.Fields %}
+                    {% set ns.values = ns.values ~ "ps-col-" ~ column ~ "=" ~ record[column] ~ " " %}
+                {% endfor %}
+                <ps-gui-table-record {{ns.values}}></ps-gui-table-record>
+            {% endfor %}
+        </ps-gui-table>
+    </body>
+</html>

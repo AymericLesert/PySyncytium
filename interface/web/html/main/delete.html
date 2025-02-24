@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Administration</title>
+        <script type="module" src="/script/psmain.js"></script>
+    </head>
+    <body>
+        <h2>Suppression d'un enregistrement de {{table.Name}}</h2>
+        <ps-gui-box ps-method="delete"
+                    ps-table="{{table.Name}}"
+                    ps-keys="{{keys}}">
+            {% for field in table.Fields %}
+            <ps-gui-field ps-id="{{field}}"
+                          ps-label="{{table.Fields[field].Description}}"
+                          ps-value="{{record[field]}}">
+            </ps-gui-field>
+            {% endfor %}
+        </ps-gui-box>
+    </body>
+</html>

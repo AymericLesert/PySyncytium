@@ -14,7 +14,9 @@ Tables:
         Type: String
         MaxLength: 80
       PhoneNumber:
+        Description: "Téléphone"
         Type: String
         MaxLength: 14
       Age:
+        Description: "Age"
         Type: Integer

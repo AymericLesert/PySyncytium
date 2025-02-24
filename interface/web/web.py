@@ -43,15 +43,16 @@ def decrypt_user_web(access_token = Cookie(None)):
 # Templates files
 # ---------------
 
-templates = Jinja2Templates(directory="interface/web/template")
+templates = Jinja2Templates(directory="interface/web/html")
 
-# ---------------------------------------
-# Static files and static protected files
-# ---------------------------------------
+# ------------
+# Static files
+# ------------
 
-app.mount("/static", StaticFiles(directory="interface/web/public"), name="static")
+app.mount("/style", StaticFiles(directory="interface/web/style"), name="style")
+app.mount("/image", StaticFiles(directory="interface/web/image"), name="image")
 
-@app.get("/script/{filename}")
+@app.get("/script/{filename:path}")
 def get_protected_file(filename,
                        user = Depends(decrypt_user_web)):
     """
@@ -186,6 +187,7 @@ async def post_table_insert(application : str,
     if user is None:
         raise HTTPException(status_code=400, detail="Not authenticated")
     record = await request.form()
+    print(record)
     with DSSchemas().get_session(user["client"], application) as schema:
         with schema:
             schema[table].insert(schema[table].new(dict(record)))

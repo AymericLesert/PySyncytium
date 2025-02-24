@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{client.id}}.{{application.id}}</title>
+        <script type="module" src="/script/psmain.js"></script>
+    </head>
+    <body>
+        <h2>Création d'un enregistrement de {{ table.Name }}</h2>
+        <ps-gui-box ps-id="{{application.id}}"
+                    ps-method="insert"
+                    ps-table="{{table.Name}}">
+            {% for field in table.Fields %}
+            <ps-gui-field ps-id="{{field}}"
+                          ps-label="{{table.Fields[field].Description}}">
+            </ps-gui-field>
+            {% endfor %}
+        </ps-gui-box>
+    </body>
+</html>

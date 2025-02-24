@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Accueil</title>
+        <script src="/script/chat.js"></script>
+    </head>
+    <body>
+        <h2>Bienvenue, {{ user.sub }} !</h2>
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off" />
+            <button>Send</button>
+        </form>
+        <button onclick="getSchema()">Schema</button>
+        <button onclick="getTable('User')">Table User</button>
+        <ul id='messages'>
+        </ul>
+    </body>
+</html>

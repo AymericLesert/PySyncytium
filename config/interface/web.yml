@@ -7,7 +7,7 @@ server:
 jwt:
     secret_key*: ${PSJWT_SECRET_KEY?mysecret}
     algorithm*: ${PSJWT_ALGORITHM}
-    expires: 30
+    expires: 320
 
 password:
     algorithm*: ${PSPASSWORD_ALGORITHM}
