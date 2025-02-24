@@ -43,7 +43,7 @@ def decrypt_user_web(access_token = Cookie(None)):
 # Templates files
 # ---------------
 
-templates = Jinja2Templates(directory="interface/web/html")
+templates = Jinja2Templates(directory="interface/web/html/vue")
 
 # ------------
 # Static files

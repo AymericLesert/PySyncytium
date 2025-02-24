@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{client.Name}}</title>
+        <script type="importmap">
+            {
+              "imports": {
+                "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+              }
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Bienvenue {{ user.sub }} !</h1>
+        <h2>Liste des applications</h2>
+        {% raw %}
+        <div id="app">
+            <button @click="count++">{{ count }}</button>
+        </div>
+        {% endraw %}
+        <script type="module">
+            import { app } from '/script/psvue.js';
+            app.mount('#app');
+        </script>
+    </body>
+</html>
