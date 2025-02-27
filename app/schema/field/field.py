@@ -84,3 +84,5 @@ class DSField:
         self.__name = fieldname
         self.__defaultvalue = description.get('DefaultValue', None)
         self.__description = description.get('Description', '')
+        if self.__description == "":
+            self.__description = fieldname

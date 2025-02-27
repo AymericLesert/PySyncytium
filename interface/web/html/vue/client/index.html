@@ -9,17 +9,41 @@
               }
             }
         </script>
+        <script type="module" src="/script/psmain.js"></script>
     </head>
     <body>
         <h1>Bienvenue {{ user.sub }} !</h1>
         <h2>Liste des applications</h2>
         {% raw %}
-        <div id="app">
-            <button @click="count++">{{ count }}</button>
-        </div>
+        <ul id="app">
+            <template v-for="application in applications">
+                <ps-gui-application :ps-id=application.id
+                                    :ps-name=application.name>
+                </ps-gui-application>
+            </template>
+            <ps-gui-application ps-id="chat"
+                                ps-name="Application Chat">
+            </ps-gui-application>
+        </ul>
         {% endraw %}
         <script type="module">
-            import { app } from '/script/psvue.js';
+            import { createApp } from 'vue';
+
+            const app = createApp({
+                data() {
+                    return {
+                        applications: [
+                            {% for application in client.applications %}
+                            {
+                                id: '{{client.applications[application].id}}',
+                                name: '{{client.applications[application].name}}'
+                            },
+                            {% endfor %}
+                        ]
+                    }
+                }
+            });
+
             app.mount('#app');
         </script>
     </body>

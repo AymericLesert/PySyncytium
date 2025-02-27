@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{client.id}}.{{application.id}}</title>
+        <script type="importmap">
+            {
+              "imports": {
+                "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+              }
+            }
+        </script>
+        <script type="module" src="/script/psmain.js"></script>
+    </head>
+    <body>
+        {% set ns = namespace(columns="") %}
+        <h2>Liste des enregistrements de {{ table.Name }} !</h2>
+
+        {% raw %}
+        <div id="app">
+            <ps-gui-table :ps-id=name :ps-columns=getColumns :ps-keys=getKeys>
+                <ps-gui-table-record v-for="record in getRecords" v-bind="record"></ps-gui-table-record>
+            </ps-gui-table>
+        </div>
+        {% endraw %}
+        <script type="module">
+            import { createApp } from 'vue';
+
+            const app = createApp({
+                data() {
+                    return {
+                        name: '{{table.Name}}',
+                        fields: [
+                            {% for field in table.Fields %}
+                            '{{field}}',
+                            {% endfor %}
+                        ],
+                        keys: [
+                            {% for field in table.Key %}
+                            '{{field}}',
+                            {% endfor %}
+                        ],
+                        records: [
+                            {% for record in records %}
+                            { 
+                                {% for field in record %}
+                                '{{field}}': '{{record[field]}}',
+                                {% endfor %}
+                            },
+                            {% endfor %}
+                        ]
+                    }
+                },
+                computed: {
+                    getColumns() {
+                        let columns = "";
+                        for (let column of this.fields) {
+                            if (columns !== "")
+                                columns += ",";
+                            columns += column;
+                        }
+                        return columns;
+                    },
+                    getKeys() {
+                        let keys = "";
+                        for (let key of this.keys) {
+                            if (keys !== "")
+                                keys += ",";
+                            keys += key;
+                        }
+                        return keys;
+                    },
+                    getRecords() {
+                        let records = [];
+                        for (let record of this.records) {
+                            let newItem = {};
+                            for (let item in record) {
+                                newItem['ps-col-' + item] = record[item];
+                            }
+                            records.push(newItem);
+                        }
+                        return records;
+                    }
+                }
+            });
+
+            app.mount('#app');
+        </script>
+    </body>
+</html>
