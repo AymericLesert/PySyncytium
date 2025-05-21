@@ -43,7 +43,7 @@ def decrypt_user_web(access_token = Cookie(None)):
 # Templates files
 # ---------------
 
-templates = Jinja2Templates(directory="interface/web/html/vue")
+templates = Jinja2Templates(directory="interface/web/html/primevue")
 
 # ------------
 # Static files
@@ -212,7 +212,10 @@ async def get_table_select(application : str,
         records = []
         with schema:
             for record in schema[table]:
-                records.append(record.to_dict())
+                newRecord = record.to_dict()
+                newRecord['_tableName'] = table
+                newRecord['_key'] = ','.join([newRecord[key] for key in schema[table].key])
+                records.append(newRecord)
         return templates.TemplateResponse("client/application/select.html",
                                           {
                                               "request": request,
@@ -357,6 +360,19 @@ async def get_chat(request : Request,
     if user is None:
         return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
     return templates.TemplateResponse("chat.html",
+                                      {
+                                          "request": request,
+                                          "user": user
+                                      })
+
+@app.get("/test", response_class=HTMLResponse)
+@asyncloggerexecutiontime
+async def get_chat(request : Request,
+                   user = Depends(decrypt_user_web)):
+    """Access to the chat page"""
+    if user is None:
+        return RedirectResponse(url=f"/login?redirect_to={request.url}", status_code=303)
+    return templates.TemplateResponse("test.html",
                                       {
                                           "request": request,
                                           "user": user

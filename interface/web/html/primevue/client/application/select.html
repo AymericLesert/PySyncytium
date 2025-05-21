@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{client.id}}.{{application.id}}</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+    </head>
+    <body>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+        <script src="https://unpkg.com/@primevue/themes/umd/aura.min.js"></script>
+        <h2>Liste des enregistrements de {{ table.Name }} !</h2>
+        <div id="app">
+            <PS-DataTable :value="records"
+                          sort-mode="multiple"
+                          show-gridlines
+                          v-model:selection="selectedRows"
+                          selection-mode="multiple"
+                          :dataKey='keys.join(",")'
+                          tableStyle="min-width: 50rem">
+                <PS-Column selection-mode="multiple" headerStyle="width: 3rem"></PS-Column>
+                <PS-Column v-for="col of fields" :key="col" :field="col" :header="col" sortable></PS-Column>
+                <PS-Column class="w-24 !text-end">
+                    <template #body="{ data }">
+                        <PS-Button as="a"
+                                   icon="pi pi-pencil"
+                                   :href='"../update/" + data._tableName + "/" + data._key'
+                                   severity="secondary"
+                                   rounded></PS-Button>
+                    </template>
+                </PS-Column>
+                <PS-Column class="w-24 !text-end">
+                    <template #body="{ data }">
+                        <PS-Button as="a"
+                                   icon="pi pi-trash"
+                                   :href='"../delete/" + data._tableName + "/" + data._key'
+                                   severity="secondary"
+                                   rounded></PS-Button>
+                    </template>
+                </PS-Column>
+            </PS-DataTable>
+            <ps-button as="a"
+                       label="Ajouter un enregistrement"
+                       icon="pi pi-wallet"
+                       icon-pos="top"
+                       :href='"../insert/" + name'
+                       size="large" />
+        </div>
+        <script type="module">
+            const { createApp } = Vue;
+
+            const app = createApp({
+                data() {
+                    return {
+                        name: '{{table.Name}}',
+                        fields: [
+                            {% for field in table.Fields %}
+                            '{{field}}',
+                            {% endfor %}
+                        ],
+                        keys: [
+                            {% for field in table.Key %}
+                            '{{field}}',
+                            {% endfor %}
+                        ],
+                        selectedRows: null,
+                        records: [
+                            {% for record in records %}
+                            {
+                                {% for field in record %}
+                                {{field}}: '{{record[field]}}',
+                                {% endfor %}
+                            },
+                            {% endfor %}
+                        ]
+                    }
+                }
+            });
+            app.use(PrimeVue.Config, {
+                theme: {
+                    preset: PrimeVue.Themes.Aura
+                }
+            });
+            app.component('ps-datatable', PrimeVue.DataTable);
+            app.component('ps-column', PrimeVue.Column);
+            app.component('ps-button', PrimeVue.Button);
+            app.mount('#app');
+        </script>
+    </body>
+</html>

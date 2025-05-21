@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Administration</title>
+        <script type="importmap">
+            {
+              "imports": {
+                "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+              }
+            }
+        </script>
+        <script type="module" src="/script/psmain.js"></script>
+    </head>
+    <body>
+        <h2>Création d'un enregistrement de {{ table.Name }}</h2>
+        {% raw %}
+        <div id="app">
+            <ps-gui-box ps-method="insert"
+                        :ps-table=name>
+                <ps-gui-field :ps-id="field.name"
+                              :ps-label="field.label"
+                              v-for="field in fields">
+                </ps-gui-field>
+            </ps-gui-box>
+        </div>
+        {% endraw %}
+        <script type="module">
+            import { createApp } from 'vue';
+
+            const app = createApp({
+                data() {
+                    return {
+                        name: '{{table.Name}}',
+                        fields: [
+                            {% for field in table.Fields %}
+                            {
+                                name: '{{table.Fields[field].Name}}',
+                                label: '{{table.Fields[field].Description}}'
+                            },
+                            {% endfor %}
+                        ]
+                    }
+                }
+            });
+
+            app.mount('#app');
+        </script>
+    </body>
+</html>

@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Création {{client.id}}.{{application.id}}</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css">
+    </head>
+    <body>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+        <script src="https://unpkg.com/@primevue/themes/umd/aura.min.js"></script>
+
+        <div id="app">
+            <ps-gui-box :ps-id=id
+                        ps-method="update"
+                        :ps-table=name
+                        :ps-keys=keys>
+                <ps-gui-field :ps-id=field.name
+                              :ps-label=field.label
+                              :ps-value=field.value
+                              v-for="field in fields">
+                </ps-gui-field>
+            </ps-gui-box>
+        </div>
+
+        <script>
+            const { createApp, ref } = Vue;
+
+            const app = createApp({
+                data() {
+                    return {
+                        id: '{{application.id}}',
+                        name: '{{table.Name}}',
+                        keys: '{{keys}}',
+                        fields: [
+                            {% for field in table.Fields %}
+                            {
+                                name: '{{table.Fields[field].Name}}',
+                                label: '{{table.Fields[field].Description}}',
+                                value: '{{record[field]}}'
+                            },
+                            {% endfor %}
+                        ]
+                    }
+                }
+            });
+
+            app.use(PrimeVue.Config, {
+                theme: {
+                    preset: PrimeVue.Themes.Aura
+                }
+            });
+
+            app.component('p-datepicker', PrimeVue.DatePicker);
+
+            app.mount('#app');
+        </script>
+    </body>
+</html>

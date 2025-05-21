@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+
+        <title>{{client.Name}}</title>
+
+        <link href="https://unpkg.com/primeicons/primeicons.css" rel="stylesheet">
+
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+        <script src="https://unpkg.com/@primevue/themes/umd/aura.min.js"></script>
+    </head>
+    <body>
+        <h1>Bienvenue {{ user.sub }} !</h1>
+        <h2>Liste des applications</h2>
+        <div id="app">
+            <template v-for="application in applications">
+                <ps-button as="a"
+                           :label="application.name"
+                           icon="pi pi-shopping-bag"
+                           icon-pos="bottom"
+                           :href='"/" + application.id + "/index.html"'
+                           size="large">
+                </ps-button>
+            </template>
+            <ps-button as="a"
+                       label="Application Chat"
+                       icon="pi pi-shopping-bag"
+                       icon-pos="top"
+                       href="/chat/"
+                       size="large" />
+        </div>
+        <script type="module">
+            const { createApp } = Vue;
+
+            const app = createApp({
+                data() {
+                    return {
+                        applications: [
+                            {% for application in client.applications %}
+                            {
+                                id: '{{client.applications[application].id}}',
+                                name: '{{client.applications[application].name}}'
+                            },
+                            {% endfor %}
+                        ]
+                    }
+                }
+            });
+            app.use(PrimeVue.Config, {
+                theme: {
+                    preset: PrimeVue.Themes.Aura
+                }
+            });
+            app.component('ps-button', PrimeVue.Button);
+            app.mount('#app');
+        </script>
+    </body>
+</html>

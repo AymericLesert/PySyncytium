@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{client.id}}.{{application.id}}</title>
+        <script type="importmap">
+            {
+              "imports": {
+                "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+              }
+            }
+        </script>
+        <script type="module" src="/script/psmain.js"></script>
+    </head>
+    <body>
+        <h2>Suppression d'un enregistrement de {{table.Name}}</h2>
+        {% raw %}
+        <div id="app">
+            <ps-gui-box :ps-id=id
+                        ps-method="delete"
+                        :ps-table=name
+                        :ps-keys=keys>
+                <ps-gui-field :ps-id=field.name
+                              :ps-label=field.label
+                              :ps-value=field.value
+                              v-for="field in fields">
+                </ps-gui-field>
+            </ps-gui-box>
+        </div>
+        {% endraw %}
+        <script type="module">
+                import { createApp } from 'vue';
+
+                const app = createApp({
+                    data() {
+                        return {
+                            id: '{{application.id}}',
+                            name: '{{table.Name}}',
+                            keys: '{{keys}}',
+                            fields: [
+                                {% for field in table.Fields %}
+                                {
+                                    name: '{{table.Fields[field].Name}}',
+                                    label: '{{table.Fields[field].Description}}',
+                                    value: '{{record[field]}}'
+                                },
+                                {% endfor %}
+                            ]
+                        }
+                    }
+                });
+
+                app.mount('#app');
+        </script>
+    </body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+
+        <title>PrimeVue + CDN</title>
+
+        <link href="https://unpkg.com/primeicons/primeicons.css" rel="stylesheet">
+
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+        <script src="https://unpkg.com/@primevue/themes/umd/aura.min.js"></script>
+    </head>
+    <body>
+        {% raw %}
+        <div id="app">
+            <p-datepicker v-model="date"></p-datepicker>
+            <br /><br />
+            {{ date }}
+            <br /><br />
+            <p-button label="Application Chat"
+                      icon="pi pi-search"
+                      iconPos="left"
+                      raised />
+        </div>
+        {% endraw %}
+
+        <script>
+            const { createApp, ref } = Vue;
+
+            const app = createApp({
+                setup() {
+                    const date = ref();
+
+                    return {
+                        date
+                    };
+                },
+            });
+            app.use(PrimeVue.Config, {
+                theme: {
+                    preset: PrimeVue.Themes.Aura,
+                    options: {
+                        cssLayer: {
+                            name: 'primevue',
+                            order: 'theme, base, primevue'
+                        }
+                    }
+                }
+            });
+
+            app.component('p-datepicker', PrimeVue.DatePicker);
+            app.component('p-button', PrimeVue.Button);
+
+            app.mount('#app');
+        </script>
+    </body>
+</html>
