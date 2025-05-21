@@ -18,7 +18,7 @@ Ce projet vise à reprendre le principe, à le développer en Python et de fourn
 
 A partir d'une description JSON ou Yaml, ce cadre technique construit automatiquement des interfaces graphiques en mode Web, des accès API sécurisés et des fonctions accessibles via uns WebSocket :
 
-``
+```
 Name: PSRoot
 Description: "Gestion du périmètre de l'application PySyncytium'"
 Version: 1
@@ -79,6 +79,6 @@ Tables:
         Description: "Nom de l'application'"
         MaxLength: 40
         DefaultValue: "Test"
-``
+```
 
 Le but, à termes, est d'offrir la possibilité de créer un service SaaS permettant de créer simplement des applications métiers : le tout en mode low-code, sans dépendance à une infrastructure imposée et ouvert aux outils d'IA.
